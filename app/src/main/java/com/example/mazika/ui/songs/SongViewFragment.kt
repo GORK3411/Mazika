@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +39,16 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
 
     private fun onSongClick(song: Song) {
         Toast.makeText(requireContext(), "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
+        val player = ExoPlayer.Builder(requireContext()).build()
 
+        // Build the media item.
+        val mediaItem = MediaItem.fromUri(song.data)
+        // Set the media item to be played.
+        player.setMediaItem(mediaItem)
+        // Prepare the player.
+        player.prepare()
+        // Start the playback.
+        player.play()
         // TODO: play the song using ExoPlayer
     }
 }
