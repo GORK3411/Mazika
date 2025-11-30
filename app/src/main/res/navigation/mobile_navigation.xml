@@ -6,6 +6,12 @@
     app:startDestination="@+id/navigation_home">
 
     <fragment
+        android:id="@+id/navigation_list"
+        android:name="com.example.mazika.ui.songs.SongViewFragment"
+        android:label="@string/title_songs"
+        tools:layout="@layout/fragment_item_list" />
+
+    <fragment
         android:id="@+id/navigation_home"
         android:name="com.example.mazika.ui.home.HomeFragment"
         android:label="@string/title_home"
@@ -22,4 +28,7 @@
         android:name="com.example.mazika.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+
+
 </navigation>
