@@ -5,12 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
+import com.example.mazika.model.Song
 
 /**
  * A fragment representing a list of Items.
@@ -29,7 +31,13 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         songViewModel.songs.observe(viewLifecycleOwner) { songs ->
-            recyclerView.adapter = SongAdapter(songs)
+            recyclerView.adapter = SongAdapter(songs){song -> onSongClick(song)}
         }
+    }
+
+    private fun onSongClick(song: Song) {
+        Toast.makeText(requireContext(), "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
+
+        // TODO: play the song using ExoPlayer
     }
 }
