@@ -1,5 +1,6 @@
 package com.example.mazika.ui.songs
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Song
+import com.example.mazika.services.MusicService
 
 /**
  * A fragment representing a list of Items.
@@ -38,6 +40,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
     }
 
     private fun onSongClick(song: Song) {
+        /*
         Toast.makeText(requireContext(), "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
         val player = ExoPlayer.Builder(requireContext()).build()
 
@@ -49,6 +52,11 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         player.prepare()
         // Start the playback.
         player.play()
+         */
+
+        Intent(requireContext(),MusicService::class.java).also {
+            it.action = MusicService.Actions.START.toString()
+            requireActivity().startService(it)}
         // TODO: play the song using ExoPlayer
     }
 }

@@ -1,7 +1,11 @@
 package com.example.mazika
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -9,7 +13,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -49,6 +55,20 @@ class MainActivity : AppCompatActivity() {
         navView.setupWithNavController(navController)
 
         //things i added
+
+        //permissions
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.FOREGROUND_SERVICE)
+            ,0)
+
+        //Notification
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O)
+        {
+            val channel = NotificationChannel("running_channel","Running", NotificationManager.IMPORTANCE_HIGH)
+            val  notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
 
 
         //load the songs
