@@ -56,6 +56,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
 
         Intent(requireContext(),MusicService::class.java).also {
             it.action = MusicService.Actions.START.toString()
+            it.putExtra("song_uri",song.data)
             requireActivity().startService(it)}
         // TODO: play the song using ExoPlayer
     }
