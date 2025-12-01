@@ -1,24 +1,51 @@
 package com.example.mazika.services
 
 
+import android.app.Notification
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.graphics.Bitmap
+import android.media.session.MediaSession
 import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerNotificationManager
 import com.example.mazika.R
 
 
+@UnstableApi
 class MusicService : Service() {
     private lateinit var player: ExoPlayer
+    private lateinit var mediaSession: MediaSession
+    private  var notificationManager: PlayerNotificationManager? = null
 
     override fun onCreate() {
         super.onCreate()
-        // create player once
+        // 1. Create player
         player = ExoPlayer.Builder(this).build()
+
+        // 2. Create MediaSession
+        mediaSession = MediaSession(this, "MusicService")
+        mediaSession.isActive = true
+
+        // 3. Create notification manager
+        notificationManager = PlayerNotificationManager.Builder(
+            this,
+            1,
+            "running_channel"
+        )
+            .setMediaDescriptionAdapter(descriptionAdapter)
+            .setNotificationListener(notificationListener)
+            .build()
+
+        notificationManager?.setPlayer(player)
+        notificationManager?.setMediaSessionToken(mediaSession.sessionToken)
     }
     override fun onBind(intent: Intent?): IBinder? {
         TODO("Not yet implemented")
@@ -36,16 +63,6 @@ class MusicService : Service() {
     }
 
     private fun strat(uri:String) {
-        val notification = NotificationCompat.Builder(this,"running_channel")
-            .setSmallIcon(R.drawable.ic_notifications_black_24dp)
-            .setContentTitle("MUSIC")
-            .setContentText("AAAAAAAAAAA")
-            .build()
-
-        startForeground(1,notification)
-
-
-        //Try running music
 
         // Build the media item.
         val mediaItem = MediaItem.fromUri(uri)
@@ -57,8 +74,50 @@ class MusicService : Service() {
         player.play()
     }
 
+    override fun onDestroy() {
+        notificationManager?.setPlayer(null)
+        player.release()
+        mediaSession.release()
+        super.onDestroy()
+    }
+
+
     enum class Actions
     {
         START,STOP
     }
+
+    private val descriptionAdapter =
+        object : PlayerNotificationManager.MediaDescriptionAdapter {
+            override fun getCurrentContentTitle(player: Player): String {
+                return "Song Title"
+            }
+
+            override fun getCurrentContentText(player: Player): String? {
+                return "Artist Name"
+            }
+
+            override fun getCurrentLargeIcon(
+                player: Player,
+                callback: PlayerNotificationManager.BitmapCallback
+            ): Bitmap? {
+                return null
+            }
+
+            override fun createCurrentContentIntent(player: Player): PendingIntent? {
+                return null
+            }
+        }
+
+    private val notificationListener =
+        object : PlayerNotificationManager.NotificationListener {
+            override fun onNotificationPosted(id: Int, notification: Notification, ongoing: Boolean) {
+                startForeground(id, notification)
+            }
+
+            override fun onNotificationCancelled(id: Int, dismissedByUser: Boolean) {
+                stopForeground(true)
+                stopSelf()
+            }
+        }
 }
