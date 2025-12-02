@@ -12,7 +12,8 @@ class SongRepository(private val context: Context) {
         MediaStore.Audio.Media.TITLE,
         MediaStore.Audio.Media.ARTIST,
         MediaStore.Audio.Media.DURATION,
-        MediaStore.Audio.Media.DATA
+        MediaStore.Audio.Media.DATA,
+        MediaStore.Audio.Media.DATE_ADDED
     )
 
     @SuppressLint("Range")
@@ -21,7 +22,7 @@ class SongRepository(private val context: Context) {
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
-        val sortOrder = "${MediaStore.Audio.Media.TITLE} ASC"
+        val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -39,8 +40,8 @@ class SongRepository(private val context: Context) {
                 val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
                 val duration = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DURATION))
                 val data = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
-
-                songList.add(Song(id, title, artist, duration, data))
+                val createDate = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED))
+                songList.add(Song(id, title, artist, duration, data,createDate))
             }
         }
 
@@ -60,7 +61,7 @@ class SongRepository(private val context: Context) {
 
         val selection = "${MediaStore.Audio.Media._ID} IN ($idsString) AND ${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
-        val sortOrder = "${MediaStore.Audio.Media.TITLE} ASC"
+        val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -78,12 +79,17 @@ class SongRepository(private val context: Context) {
                 val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
                 val duration = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DURATION))
                 val data = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
-
-                songList.add(Song(id, title, artist, duration, data))
+                val createDate = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED))
+                songList.add(Song(id, title, artist, duration, data,createDate))
             }
         }
 
 
         return songList
+    }
+
+    fun getSongByPath(songPath: String): Song?
+    {
+        return loadSongs().find { it.data == songPath }
     }
 }

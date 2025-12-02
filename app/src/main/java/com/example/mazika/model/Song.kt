@@ -1,8 +1,7 @@
 package com.example.mazika.model
 
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import java.util.Date
+
 /*
 @Entity(
     foreignKeys = [
@@ -25,6 +24,7 @@ data class Song(
     val title: String,
     val artist: String,
     val duration: Long,
-    val data: String   // file path (important for playback)
+    val data: String,   // file path (important for playback)
+    val createDate: Long
 )
 

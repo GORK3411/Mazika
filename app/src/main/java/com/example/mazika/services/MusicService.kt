@@ -37,6 +37,18 @@ class MusicService : Service() {
         // 1. Create player
         player = ExoPlayer.Builder(this).build()
 
+        player.addListener(object : Player.Listener {
+            override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                val songPath = mediaItem?.localConfiguration?.uri?.path ?: return
+
+                // Find the song in database
+                currentSong = songRepository.getSongByPath(songPath)
+
+                // Update the notification (important)
+                notificationManager?.invalidate()
+            }
+        })
+
         // 2. Create MediaSession
         mediaSession = MediaSession(this, "MusicService")
         mediaSession.isActive = true
@@ -49,6 +61,7 @@ class MusicService : Service() {
         )
             .setMediaDescriptionAdapter(descriptionAdapter)
             .setNotificationListener(notificationListener)
+
             .build()
 
         notificationManager?.setPlayer(player)
@@ -82,16 +95,21 @@ class MusicService : Service() {
     }
 
     private var playlist: List<Song> = emptyList()
+    private var currentSong : Song? = null;
     private fun start(songIds: List<Long>) {
 
-        // Load the Song objects from your repository using IDs
-        playlist = songRepository.getSongsByIds(songIds)
+        val songs = songRepository.getSongsByIds(songIds.toList())
 
-        if (!::player.isInitialized) {
-            player = ExoPlayer.Builder(this).build()
+        if (songs.isEmpty()) return
+
+        // Keep the first song as "currently playing"
+        currentSong = songs[0]
+
+        // Convert songs to MediaItems
+        val mediaItems = songs.map { song ->
+            MediaItem.fromUri(song.data)
         }
 
-        val mediaItems = playlist.map { MediaItem.fromUri(it.data) }
         player.setMediaItems(mediaItems)
         player.prepare()
         player.play()
@@ -116,11 +134,11 @@ class MusicService : Service() {
     private val descriptionAdapter =
         object : PlayerNotificationManager.MediaDescriptionAdapter {
             override fun getCurrentContentTitle(player: Player): String {
-                return "Song Title"
+                return currentSong?.title ?:"Unknown"//"Song Title"
             }
 
             override fun getCurrentContentText(player: Player): String? {
-                return "Artist Name"
+                return currentSong?.artist ?:"Unknown"
             }
 
             override fun getCurrentLargeIcon(
