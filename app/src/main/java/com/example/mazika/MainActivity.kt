@@ -4,17 +4,21 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.OptIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -24,6 +28,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.databinding.ActivityMainBinding
 import com.example.mazika.repository.SongRepository
+import com.example.mazika.services.MusicService
 import com.example.mazika.ui.songs.SongAdapter
 import com.example.mazika.ui.songs.SongViewFragment
 import com.example.mazika.ui.songs.SongViewModel
@@ -34,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val PERMISSION_REQUEST_CODE = 123
     private lateinit var binding: ActivityMainBinding
 
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -56,6 +62,8 @@ class MainActivity : AppCompatActivity() {
 
         //things i added
 
+
+
         //permissions
         ActivityCompat.requestPermissions(
             this,
@@ -71,37 +79,28 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        //load the songs
-        songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
-
-
-        songViewModel.songs.observe(this)
-        {
-            songs->
-            Toast.makeText(this, ""+songs.size, Toast.LENGTH_SHORT).show()
-            /*
-            val tmp = findViewById<View>(R.id.song_recycler_view)
-            if (tmp==null)
-            {
-                Toast.makeText(this, "NUUUUUUUUUUUUUUUUUUULLLLLLLLLLLLL", Toast.LENGTH_LONG).show()
-            }else
-            {
-                val songAdapter = SongAdapter(songs)
-                val recyclerView : RecyclerView = findViewById(R.id.song_recycler_view)
-                //recyclerView.layoutManager = LinearLayoutManager(this)
-                //recyclerView.adapter=songAdapter
-            }
-            */
-
-        }
-
-
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_MEDIA_AUDIO),PERMISSION_REQUEST_CODE)
         }
 
+        //load the songs
+        songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
+
+
+
         songViewModel.fetchSongs()
+
+        //Add Play Button
+
+        val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
+        btnPlayPause.setOnClickListener {
+            // Send a command to MusicService
+            val intent = Intent(this, MusicService::class.java)
+            intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
+            startService(intent)
+        }
+
 
     }
 

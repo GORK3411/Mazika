@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.session.MediaSession
 import android.os.IBinder
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 
@@ -17,6 +18,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerNotificationManager
 import com.example.mazika.R
+import com.example.mazika.model.Song
+import com.example.mazika.repository.SongRepository
 
 
 @UnstableApi
@@ -25,8 +28,12 @@ class MusicService : Service() {
     private lateinit var mediaSession: MediaSession
     private  var notificationManager: PlayerNotificationManager? = null
 
+    private lateinit var songRepository : SongRepository
+
     override fun onCreate() {
         super.onCreate()
+
+        songRepository = SongRepository(this)
         // 1. Create player
         player = ExoPlayer.Builder(this).build()
 
@@ -56,7 +63,7 @@ class MusicService : Service() {
 
         when(intent?.action)
         {
-            Actions.START.toString()->strat(intent.getStringExtra("song_uri").toString())
+            Actions.START.toString()->start(intent.getLongArrayExtra("songs_ID")?.toList() ?: emptyList())//strat(intent.getStringExtra("song_uri").toString())
             Actions.STOP.toString()->stopSelf()
         }
         return super.onStartCommand(intent, flags, startId)
@@ -74,6 +81,23 @@ class MusicService : Service() {
         player.play()
     }
 
+    private var playlist: List<Song> = emptyList()
+    private fun start(songIds: List<Long>) {
+
+        // Load the Song objects from your repository using IDs
+        playlist = songRepository.getSongsByIds(songIds)
+
+        if (!::player.isInitialized) {
+            player = ExoPlayer.Builder(this).build()
+        }
+
+        val mediaItems = playlist.map { MediaItem.fromUri(it.data) }
+        player.setMediaItems(mediaItems)
+        player.prepare()
+        player.play()
+    }
+
+
     override fun onDestroy() {
         notificationManager?.setPlayer(null)
         player.release()
@@ -84,7 +108,9 @@ class MusicService : Service() {
 
     enum class Actions
     {
-        START,STOP
+        START,STOP,TOGGLE_PLAY;
+
+
     }
 
     private val descriptionAdapter =
