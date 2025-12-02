@@ -13,6 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.recyclerview.selection.SelectionPredicates
+import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
+import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,9 +40,42 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         recyclerView = view.findViewById(R.id.song_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+
+
+
+            var adapter: SongAdapter? = null;
+
         songViewModel.songs.observe(viewLifecycleOwner) { songs ->
-            recyclerView.adapter = SongAdapter(songs){song -> onSongClick(song)}
+            val adapter = SongAdapter(songs) { song -> onSongClick(song) }
+            recyclerView.adapter = adapter
+            //recyclerView.setHasStableIds(true)
+
+            val tracker = SelectionTracker.Builder(
+                "songSelection",
+                recyclerView,
+                SongKeyProvider(adapter),
+                SongDetailsLookup(recyclerView),
+                StorageStrategy.createLongStorage()
+            ).withSelectionPredicate(
+                SelectionPredicates.createSelectAnything()
+            ).build()
+
+            adapter.tracker = tracker // VERY IMPORTANT!
+
+            tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+                override fun onSelectionChanged() {
+                    val count = tracker.selection.size()
+                    Toast.makeText(requireContext(), "Selected: $count", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
+
+
+
+
+
+
+
     }
 
     @OptIn(UnstableApi::class)
@@ -57,10 +94,14 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         player.play()
          */
 
+
+
         Intent(requireContext(),MusicService::class.java).also {
             it.action = MusicService.Actions.START.toString()
             it.putExtra("song_uri",song.data)
             requireActivity().startService(it)}
+
+
         // TODO: play the song using ExoPlayer
     }
 }
