@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.OptIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -27,7 +28,6 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.databinding.ActivityMainBinding
-import com.example.mazika.repository.SongRepository
 import com.example.mazika.services.MusicService
 import com.example.mazika.ui.songs.SongAdapter
 import com.example.mazika.ui.songs.SongViewFragment
@@ -96,12 +96,17 @@ class MainActivity : AppCompatActivity() {
         val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
         btnPlayPause.setOnClickListener {
             // Send a command to MusicService
-            val intent = Intent(this, MusicService::class.java)
+            val intent = Intent(application, MusicService::class.java)
             intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
             startService(intent)
         }
 
-
+        //Play Bar below
+        val tvSongTitle: TextView = findViewById(R.id.currentSongTitle)
+        songViewModel.currentSong.observe(this) { song ->
+            tvSongTitle.text = song?.title ?: "Unknown"
+            //tvSongArtist.text = song?.artist ?: "Unknown"
+        }
     }
 
     @Override

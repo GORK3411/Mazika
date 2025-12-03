@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.provider.MediaStore
 import com.example.mazika.model.Song
+import kotlinx.coroutines.flow.MutableStateFlow
 
-class SongRepository(private val context: Context) {
+object SongRepository{
+
 
     val projection = arrayOf(
         MediaStore.Audio.Media._ID,
@@ -17,7 +19,7 @@ class SongRepository(private val context: Context) {
     )
 
     @SuppressLint("Range")
-    public fun loadSongs() : List<Song> {
+    public fun loadSongs(context: Context) : List<Song> {
         val songList = mutableListOf<Song>()
 
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
@@ -50,7 +52,7 @@ class SongRepository(private val context: Context) {
 
 
     @SuppressLint("Range")
-    public fun getSongsByIds(songIds : List<Long>) : List<Song>
+    public fun getSongsByIds(songIds : List<Long>,context: Context) : List<Song>
     {
         val songList = mutableListOf<Song>()
         if (songIds.isEmpty()) return songList
@@ -88,8 +90,16 @@ class SongRepository(private val context: Context) {
         return songList
     }
 
-    fun getSongByPath(songPath: String): Song?
+    fun getSongByPath(songPath: String,context: Context): Song?
     {
-        return loadSongs().find { it.data == songPath }
+        return loadSongs(context).find { it.data == songPath }
     }
+
+    //Test
+
+
+    val currentSong = MutableStateFlow<Song?>(null)
+    val isPlaying = MutableStateFlow(false)
+
+
 }

@@ -11,6 +11,7 @@ import android.os.IBinder
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.ViewModelProvider
 
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -20,6 +21,7 @@ import androidx.media3.ui.PlayerNotificationManager
 import com.example.mazika.R
 import com.example.mazika.model.Song
 import com.example.mazika.repository.SongRepository
+import com.example.mazika.ui.songs.SongViewModel
 
 
 @UnstableApi
@@ -28,12 +30,12 @@ class MusicService : Service() {
     private lateinit var mediaSession: MediaSession
     private  var notificationManager: PlayerNotificationManager? = null
 
-    private lateinit var songRepository : SongRepository
+    private  var songRepository = SongRepository
 
     override fun onCreate() {
         super.onCreate()
 
-        songRepository = SongRepository(this)
+
         // 1. Create player
         player = ExoPlayer.Builder(this).build()
 
@@ -42,7 +44,9 @@ class MusicService : Service() {
                 val songPath = mediaItem?.localConfiguration?.uri?.path ?: return
 
                 // Find the song in database
-                currentSong = songRepository.getSongByPath(songPath)
+                currentSong = songRepository.getSongByPath(songPath,application)
+                songRepository.currentSong.value = currentSong
+
 
                 // Update the notification (important)
                 notificationManager?.invalidate()
@@ -98,13 +102,13 @@ class MusicService : Service() {
     private var currentSong : Song? = null;
     private fun start(songIds: List<Long>) {
 
-        val songs = songRepository.getSongsByIds(songIds.toList())
+        val songs = songRepository.getSongsByIds(songIds.toList(),application)
 
         if (songs.isEmpty()) return
 
         // Keep the first song as "currently playing"
         currentSong = songs[0]
-
+        songRepository.currentSong.value = currentSong
         // Convert songs to MediaItems
         val mediaItems = songs.map { song ->
             MediaItem.fromUri(song.data)
