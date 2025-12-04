@@ -76,13 +76,12 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
 
     @OptIn(UnstableApi::class)
     private fun onSongClick(song: Song) {
-        /*
-        Intent(requireContext(),MusicService::class.java).also {
-            it.action = MusicService.Actions.START.toString()
-            it.putExtra("song_uri",song.data)
-            requireActivity().startService(it)}
-         */
-        // TODO: play the song using ExoPlayer
+        if(tracker.selection.size()==0)
+        {
+            val selectedIds = listOf<Long>(song.id)
+            playSelectedSongs(selectedIds)
+            // TODO: play the song using ExoPlayer
+        }
     }
 
 
@@ -101,7 +100,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when(item?.itemId) {
                 R.id.menu_play -> {
-                    playSelectedSongs()
+                    runSelectedSongsFromTracker()
                     mode?.finish()
                     return true
                 }
@@ -128,12 +127,15 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
             actionMode = null
         }
     }
-
-    
-    @OptIn(UnstableApi::class)
-    fun playSelectedSongs()
+    private fun runSelectedSongsFromTracker()
     {
         val selectedIds = tracker.selection.toList()
+        playSelectedSongs(selectedIds)
+    }
+
+    @OptIn(UnstableApi::class)
+    fun playSelectedSongs(selectedIds:List<Long>)
+    {
         Intent(requireContext(),MusicService::class.java).also {
             it.action = MusicService.Actions.START.toString()
             //it.putExtra("song_uri",song.data)
