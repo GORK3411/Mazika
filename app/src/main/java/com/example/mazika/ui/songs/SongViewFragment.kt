@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.OptIn
-import androidx.core.content.ContentProviderCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.MediaItem
@@ -20,7 +18,6 @@ import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
@@ -41,20 +38,15 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
 
         songViewModel = ViewModelProvider(requireActivity())[SongViewModel::class.java]
 
+        //initialise RecyclerView
         recyclerView = view.findViewById(R.id.song_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-
-
-
-            var adapter: SongAdapter? = null;
-
         songViewModel.songs.observe(viewLifecycleOwner) { songs ->
             val adapter = SongAdapter(songs) { song -> onSongClick(song) }
             recyclerView.adapter = adapter
-            //recyclerView.setHasStableIds(true)
 
-             tracker = SelectionTracker.Builder(
+            //Add selectionTracker to select multiple songs
+            tracker = SelectionTracker.Builder(
                 "songSelection",
                 recyclerView,
                 SongKeyProvider(adapter),
@@ -65,14 +57,6 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
             ).build()
 
             adapter.tracker = tracker // VERY IMPORTANT!
-            //When an item is selected/unselected print a message
-            tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
-                override fun onSelectionChanged() {
-                    val count = tracker.selection.size()
-                    Toast.makeText(requireContext(), "Selected: $count", Toast.LENGTH_SHORT).show()
-                }
-            })
-
             //Observer for ActionMode
             tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
                 override fun onSelectionChanged() {
@@ -88,39 +72,16 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
                 }
             })
         }
-
-
-
-
-
-
-
     }
 
     @OptIn(UnstableApi::class)
     private fun onSongClick(song: Song) {
         /*
-        Toast.makeText(requireContext(), "Clicked: ${song.title}", Toast.LENGTH_SHORT).show()
-        val player = ExoPlayer.Builder(requireContext()).build()
-
-        // Build the media item.
-        val mediaItem = MediaItem.fromUri(song.data)
-        // Set the media item to be played.
-        player.setMediaItem(mediaItem)
-        // Prepare the player.
-        player.prepare()
-        // Start the playback.
-        player.play()
-         */
-
-
-
         Intent(requireContext(),MusicService::class.java).also {
             it.action = MusicService.Actions.START.toString()
             it.putExtra("song_uri",song.data)
             requireActivity().startService(it)}
-
-
+         */
         // TODO: play the song using ExoPlayer
     }
 
@@ -168,6 +129,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         }
     }
 
+    
     @OptIn(UnstableApi::class)
     fun playSelectedSongs()
     {

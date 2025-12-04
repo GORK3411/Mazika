@@ -42,7 +42,11 @@ class MainActivity : AppCompatActivity() {
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        //These were already when i created the project
+        //This part is used for the bottom navigation Bar
+        //To add a new button you need to add a new Item in "selection_menu.xml" create a fragment and add it in "mobile_navigation.xml"
+        //Note that both the fragment and item should have the same ID
+        //Also the ID needs to be added "appBarConfiguration" inside "MainActivity.kt"
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -60,10 +64,46 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        //things i added
+
+        //New things added
+
+        DemandPermissions()
+
+        //initiate songViewModel and fetch songs
+        songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
+        songViewModel.fetchSongs()
+
+        AddPlayButton()
+
+        AddPlayBar()
+
+    }
+
+    private fun AddPlayBar()
+    {
+
+        val tvSongTitle: TextView = findViewById(R.id.currentSongTitle)
+        songViewModel.currentSong.observe(this) { song ->
+            tvSongTitle.text = song?.title ?: "Unknown"
+            //tvSongArtist.text = song?.artist ?: "Unknown"
+        }
+    }
 
 
+    @OptIn(UnstableApi::class)
+    private fun AddPlayButton()
+    {
+        val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
+        btnPlayPause.setOnClickListener {
+            // Send a command to MusicService
+            val intent = Intent(application, MusicService::class.java)
+            intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
+            startService(intent)
+        }
+    }
 
+    private fun DemandPermissions()
+    {
         //permissions
         ActivityCompat.requestPermissions(
             this,
@@ -82,30 +122,6 @@ class MainActivity : AppCompatActivity() {
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_MEDIA_AUDIO),PERMISSION_REQUEST_CODE)
-        }
-
-        //load the songs
-        songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
-
-
-
-        songViewModel.fetchSongs()
-
-        //Add Play Button
-
-        val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
-        btnPlayPause.setOnClickListener {
-            // Send a command to MusicService
-            val intent = Intent(application, MusicService::class.java)
-            intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
-            startService(intent)
-        }
-
-        //Play Bar below
-        val tvSongTitle: TextView = findViewById(R.id.currentSongTitle)
-        songViewModel.currentSong.observe(this) { song ->
-            tvSongTitle.text = song?.title ?: "Unknown"
-            //tvSongArtist.text = song?.artist ?: "Unknown"
         }
     }
 

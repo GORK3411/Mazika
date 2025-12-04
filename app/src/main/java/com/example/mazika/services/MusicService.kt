@@ -8,20 +8,13 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.media.session.MediaSession
 import android.os.IBinder
-import android.view.View
-import android.widget.Toast
-import androidx.core.app.NotificationCompat
-import androidx.lifecycle.ViewModelProvider
-
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerNotificationManager
-import com.example.mazika.R
 import com.example.mazika.model.Song
 import com.example.mazika.repository.SongRepository
-import com.example.mazika.ui.songs.SongViewModel
 
 
 @UnstableApi
