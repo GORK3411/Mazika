@@ -22,10 +22,13 @@ object SongRepository{
     public fun loadSongs(context: Context) : List<Song> {
         val songList = mutableListOf<Song>()
 
+        //condition to load songs
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
+        //order at the end
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
+        //object that will move on each song
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -34,6 +37,7 @@ object SongRepository{
             sortOrder
         )
 
+        //foreach media item it will fill a song and add it to the resulting list
         cursor?.use {
             while (it.moveToNext()) {
 

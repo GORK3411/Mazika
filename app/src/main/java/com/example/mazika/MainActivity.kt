@@ -104,11 +104,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun DemandPermissions()
     {
+
         //permissions
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.FOREGROUND_SERVICE)
-            ,0)
+            arrayOf(Manifest.permission.READ_MEDIA_AUDIO,Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.FOREGROUND_SERVICE
+                )
+            ,PERMISSION_REQUEST_CODE)
 
         //Notification
         if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O)
@@ -118,29 +120,37 @@ class MainActivity : AppCompatActivity() {
             notificationManager.createNotificationChannel(channel)
         }
 
-
+        /*
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,arrayOf(Manifest.permission.READ_MEDIA_AUDIO),PERMISSION_REQUEST_CODE)
         }
+
+         */
     }
 
     @Override
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<out String?>,
+        permissions: Array<String>,
         grantResults: IntArray
     ) {
 
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // permission granted → load songs
+            val audioPermissionIndex = permissions.indexOf(Manifest.permission.READ_MEDIA_AUDIO)
 
+            if (audioPermissionIndex != -1 &&
+                grantResults[audioPermissionIndex] == PackageManager.PERMISSION_GRANTED)
+            {
+                // User granted Read Media Audio → fetch songs
+                songViewModel.fetchSongs()
             } else {
                 Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
         }
 
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+
 }
