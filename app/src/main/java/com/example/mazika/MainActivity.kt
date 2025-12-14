@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
@@ -27,8 +28,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.example.mazika.databinding.ActivityMainBinding
+import com.example.mazika.model.Playlist
+import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.services.MusicService
+import com.example.mazika.ui.playlists.PlaylistViewModel
 import com.example.mazika.ui.songs.SongAdapter
 import com.example.mazika.ui.songs.SongViewFragment
 import com.example.mazika.ui.songs.SongViewModel
@@ -76,6 +81,22 @@ class MainActivity : AppCompatActivity() {
         AddPlayButton()
 
         AddPlayBar()
+
+        //Playlist
+
+        val db = Room.databaseBuilder(this, MyDatabase::class.java,
+            "mazika.db").build()
+        val playlistViewModel = PlaylistViewModel(PlaylistRepository(db.playlistDao))
+        playlistViewModel.playlist.observe(this) { playlists ->
+            Toast.makeText(
+                this,
+                "Playlists count: ${playlists.size}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        playlistViewModel.addPlaylist("Playlist2")
+
 
     }
 
