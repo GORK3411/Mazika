@@ -40,7 +40,6 @@ object SongRepository{
         //foreach media item it will fill a song and add it to the resulting list
         cursor?.use {
             while (it.moveToNext()) {
-
                 val id = it.getLong(it.getColumnIndex(MediaStore.Audio.Media._ID))
                 val title = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE)) ?: "Unknown"
                 val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
