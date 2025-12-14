@@ -5,4 +5,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="title_songs">Songs</string>
     <string name="play_pause">Play</string>
+    <string name="title_playlist">Playlists</string>
+    <string name="title_settings">Settings</string>
 </resources>

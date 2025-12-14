@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_list,R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_list,R.id.navigation_playlists,R.id.navigation_settings
+                //,R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
 
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
-        playlistViewModel.addPlaylist("Playlist2")
+        //playlistViewModel.addPlaylist("Playlist2")
 
 
     }

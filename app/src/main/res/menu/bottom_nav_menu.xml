@@ -6,6 +6,17 @@
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_songs" />
     <item
+        android:id="@+id/navigation_playlists"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_playlist" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_settings" />
+
+    <!--
+
+    <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
         android:title="@string/title_home" />
@@ -19,5 +30,5 @@
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/title_notifications" />
-
+    -->
 </menu>
