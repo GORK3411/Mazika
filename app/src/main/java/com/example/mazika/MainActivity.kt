@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.OptIn
@@ -81,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         AddPlayButton()
 
-        AddPlayBar()
+        addPlayBar()
 
         //Playlist
 
@@ -101,15 +102,25 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun AddPlayBar()
-    {
-
+    private fun addPlayBar() {
+        val miniPlayer: LinearLayout = findViewById(R.id.miniPlayer)
         val tvSongTitle: TextView = findViewById(R.id.currentSongTitle)
+
+        // Hide it by default (important on first launch)
+        miniPlayer.visibility = View.GONE
+
         songViewModel.currentSong.observe(this) { song ->
-            tvSongTitle.text = song?.title ?: "Unknown"
-            //tvSongArtist.text = song?.artist ?: "Unknown"
+            if (song == null) {
+                // No song → hide mini player
+                miniPlayer.visibility = View.GONE
+            } else {
+                // Song exists → show mini player
+                miniPlayer.visibility = View.VISIBLE
+                tvSongTitle.text = song.title
+            }
         }
     }
+
 
 
     @OptIn(UnstableApi::class)
