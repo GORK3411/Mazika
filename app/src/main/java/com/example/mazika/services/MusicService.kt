@@ -7,7 +7,9 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.session.MediaSession
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -15,6 +17,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerNotificationManager
 import com.example.mazika.model.Song
 import com.example.mazika.repository.SongRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @UnstableApi
@@ -75,24 +79,26 @@ class MusicService : Service() {
         {
             Actions.START.toString()->start(intent.getLongArrayExtra("songs_ID")?.toList() ?: emptyList())//strat(intent.getStringExtra("song_uri").toString())
             Actions.STOP.toString()->stopSelf()
+            Actions.TOGGLE_PLAY.toString()->toggle();
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
-    private fun strat(uri:String) {
-
-        // Build the media item.
-        val mediaItem = MediaItem.fromUri(uri)
-        // Set the media item to be played.
-        player.setMediaItem(mediaItem)
-        // Prepare the player.
-        player.prepare()
-        // Start the playback.
-        player.play()
+    private fun toggle()
+    {
+        if (player.isPlaying) {
+            player.pause()
+        } else {
+            // Only play if there is something to play
+            if (player.mediaItemCount > 0) {
+                player.play()
+            }
+        }
     }
 
     private var playlist: List<Song> = emptyList()
     private var currentSong : Song? = null;
+    /*
     private fun start(songIds: List<Long>) {
 
         val songs = songRepository.getSongsByIds(songIds.toList(),application)
@@ -111,6 +117,41 @@ class MusicService : Service() {
         player.prepare()
         player.play()
     }
+     */
+
+
+    private fun start(songIds: List<Long>) {
+        val songs = songRepository.getSongsByIds(songIds, application)
+        if (songs.isEmpty()) return
+
+        currentSong = songs[0]
+        SongRepository.setCurrentSong(currentSong)
+
+        val mediaItems = songs.map { MediaItem.fromUri(it.data) }
+        player.setMediaItems(mediaItems)
+        player.prepare()
+        player.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                if (state == Player.STATE_READY) {
+                    val dur = player.duration
+                    if (dur != -9223372036854775807L) {
+                        SongRepository.setDuration(dur.toInt())
+                    }
+                }
+            }
+            override fun onIsPlayingChanged(isPlaying: Boolean) {
+                SongRepository.setIsPlaying(isPlaying)
+            }
+        })
+
+        SongRepository.setDuration(player.duration.toInt())
+        player.play()
+
+
+        // start updating progress
+        handler.post(progressRunnable)
+    }
+
 
 
     override fun onDestroy() {
@@ -161,4 +202,24 @@ class MusicService : Service() {
                 stopSelf()
             }
         }
+
+
+    //keep track of the song's duration
+
+    val currentPosition = MutableStateFlow(0L)
+    val duration = MutableStateFlow(0L)
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            if (player.isPlaying) {
+                val pos = player.currentPosition.toInt()
+                SongRepository.setCurrentPosition(pos)
+            }
+            handler.postDelayed(this, 500)
+        }
+    }
+
+
 }

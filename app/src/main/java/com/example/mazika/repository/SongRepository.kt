@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.MediaStore
 import com.example.mazika.model.Song
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 object SongRepository{
 
@@ -104,5 +105,28 @@ object SongRepository{
     val currentSong = MutableStateFlow<Song?>(null)
     val isPlaying = MutableStateFlow(false)
 
+
+    // ⏱ Playback progress
+    private val _currentPosition = MutableStateFlow(0)
+    val currentPosition: StateFlow<Int> = _currentPosition
+
+    private val _duration = MutableStateFlow(0)
+    val duration: StateFlow<Int> = _duration
+
+    fun setCurrentSong(song: Song?) {
+        currentSong.value = song
+    }
+
+    fun setIsPlaying(playing: Boolean) {
+        isPlaying.value = playing
+    }
+
+    fun setCurrentPosition(position: Int) {
+        _currentPosition.value = position
+    }
+
+    fun setDuration(dur: Int) {
+        _duration.value = dur
+    }
 
 }

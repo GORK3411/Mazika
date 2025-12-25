@@ -25,4 +25,10 @@ class SongViewModel(application: Application) : AndroidViewModel(application) {
     //Currently playing song
     val currentSong = repository.currentSong.asLiveData()
     val isPlaying = repository.isPlaying.asLiveData()
+
+    //To track the song's currentPosition while playing
+    val currentPosition = repository.currentPosition.asLiveData()
+    val duration = repository.duration.asLiveData()
+
+
 }

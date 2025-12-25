@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.OptIn
@@ -105,23 +106,40 @@ class MainActivity : AppCompatActivity() {
     private fun addPlayBar() {
         val miniPlayer: LinearLayout = findViewById(R.id.miniPlayer)
         val tvSongTitle: TextView = findViewById(R.id.currentSongTitle)
+        val progressBar: ProgressBar = findViewById(R.id.progressBar)
+        val progressText: TextView = findViewById(R.id.progressText)
 
-        // Hide it by default (important on first launch)
         miniPlayer.visibility = View.GONE
 
         songViewModel.currentSong.observe(this) { song ->
             if (song == null) {
-                // No song → hide mini player
                 miniPlayer.visibility = View.GONE
             } else {
-                // Song exists → show mini player
                 miniPlayer.visibility = View.VISIBLE
                 tvSongTitle.text = song.title
             }
         }
+
+        songViewModel.duration.observe(this) { duration ->
+            progressBar.max = duration.toInt()
+        }
+        songViewModel.currentPosition.observe(this) { position ->
+            progressBar.progress = position
+            progressText.text = formatTime(position)
+        }
+        /*
+
+         */
     }
 
 
+
+    private fun formatTime(milliseconds: Int): String {
+        val totalSeconds = milliseconds / 1000
+        val minutes = totalSeconds / 60
+        val seconds = totalSeconds % 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
 
     @OptIn(UnstableApi::class)
     private fun AddPlayButton()
