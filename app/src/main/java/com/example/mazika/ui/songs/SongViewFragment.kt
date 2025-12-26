@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Song
+import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.services.MusicService
 
 /**
@@ -32,6 +33,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
     private lateinit var songViewModel: SongViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var tracker:SelectionTracker<Long>;
+    private val playBackRepository = PlayBackRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -136,17 +138,6 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
     @OptIn(UnstableApi::class)
     fun playSelectedSongs(selectedIds:List<Long>)
     {
-        Intent(requireContext(),MusicService::class.java).also {
-            it.action = MusicService.Actions.START.toString()
-            //it.putExtra("song_uri",song.data)
-            it.putExtra("songs_ID",selectedIds.toLongArray())
-            requireActivity().startService(it)}
-
-        //for later
-        /*
-        val firstSong = songs.first { it.id == selectedIds[0] }
-        (requireActivity() as MainActivity).updateMiniPlayer(firstSong.title, true)
-         */
-
+        playBackRepository.play(selectedIds)
     }
 }

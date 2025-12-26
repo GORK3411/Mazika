@@ -1,13 +1,19 @@
 package com.example.mazika.repository
 
 import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.provider.MediaStore
 import com.example.mazika.model.Song
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+@SuppressLint("StaticFieldLeak")
+object SongRepository {
 
-object SongRepository{
+
+    lateinit var contentResolver: ContentResolver
+
+    fun init(context: Context) {
+        contentResolver = context.applicationContext.contentResolver
+    }
 
     val projection = arrayOf(
         MediaStore.Audio.Media._ID,
@@ -19,19 +25,19 @@ object SongRepository{
     )
 
     @SuppressLint("Range")
-    public fun loadSongs(context: Context) : List<Song> {
+    fun loadSongs() : List<Song> {
         //condition to load songs
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
         //order at the end
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
-       return runCursor(selection,sortOrder,context)
+       return runCursor(selection,sortOrder)
     }
 
 
     @SuppressLint("Range")
-    public fun getSongsByIds(songIds : List<Long>,context: Context) : List<Song>
+    public fun getSongsByIds(songIds : List<Long>) : List<Song>
     {
         if (songIds.isEmpty()) return mutableListOf<Song>()
 
@@ -42,19 +48,14 @@ object SongRepository{
 
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
-        return runCursor(selection,sortOrder,context)
-    }
-
-    fun getSongByPath(songPath: String,context: Context): Song?
-    {
-        return loadSongs(context).find { it.data == songPath }
+        return runCursor(selection,sortOrder)
     }
 
     @SuppressLint("Range")
-    private fun runCursor(selection:String, sortOrder: String, context: Context) : List<Song>
+    private fun runCursor(selection:String, sortOrder: String) : List<Song>
     {
 
-        val cursor = context.contentResolver.query(
+        val cursor = contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
             selection,
@@ -79,34 +80,4 @@ object SongRepository{
 
         return songList
     }
-    //Test
-
-
-    val currentSong = MutableStateFlow<Song?>(null)
-    val isPlaying = MutableStateFlow(false)
-
-
-    // ⏱ Playback progress
-    private val _currentPosition = MutableStateFlow(0)
-    val currentPosition: StateFlow<Int> = _currentPosition
-
-    private val _duration = MutableStateFlow(0)
-    val duration: StateFlow<Int> = _duration
-
-    fun setCurrentSong(song: Song?) {
-        currentSong.value = song
-    }
-
-    fun setIsPlaying(playing: Boolean) {
-        isPlaying.value = playing
-    }
-
-    fun setCurrentPosition(position: Int) {
-        _currentPosition.value = position
-    }
-
-    fun setDuration(dur: Int) {
-        _duration.value = dur
-    }
-
 }

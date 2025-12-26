@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -18,26 +17,18 @@ import androidx.annotation.OptIn
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.getSystemService
 import androidx.lifecycle.ViewModelProvider
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
-import androidx.navigation.NavArgument
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
 import com.example.mazika.databinding.ActivityMainBinding
-import com.example.mazika.model.Playlist
+import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
-import com.example.mazika.services.MusicService
+import com.example.mazika.repository.SongRepository
 import com.example.mazika.ui.playlists.PlaylistViewModel
-import com.example.mazika.ui.songs.SongAdapter
-import com.example.mazika.ui.songs.SongViewFragment
 import com.example.mazika.ui.songs.SongViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -49,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        PlayBackRepository.init(this)
+        SongRepository.init(this)
         //These were already when i created the project
         //This part is used for the bottom navigation Bar
         //To add a new button you need to add a new Item in "selection_menu.xml" create a fragment and add it in "mobile_navigation.xml"
@@ -123,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         songViewModel.duration.observe(this) { duration ->
             progressBar.max = duration.toInt()
         }
-        songViewModel.currentPosition.observe(this) { position ->
+        songViewModel.position.observe(this) { position ->
             progressBar.progress = position
             progressText.text = formatTime(position)
         }
@@ -146,10 +139,13 @@ class MainActivity : AppCompatActivity() {
     {
         val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
         btnPlayPause.setOnClickListener {
+            /*
             // Send a command to MusicService
             val intent = Intent(application, MusicService::class.java)
             intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
             startService(intent)
+             */
+            PlayBackRepository.toggle()
         }
     }
 
