@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 object SongRepository{
 
-
     val projection = arrayOf(
         MediaStore.Audio.Media._ID,
         MediaStore.Audio.Media.TITLE,
@@ -21,77 +20,29 @@ object SongRepository{
 
     @SuppressLint("Range")
     public fun loadSongs(context: Context) : List<Song> {
-        val songList = mutableListOf<Song>()
-
         //condition to load songs
         val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
         //order at the end
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
-        //object that will move on each song
-        val cursor = context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            null,
-            sortOrder
-        )
-
-        //foreach media item it will fill a song and add it to the resulting list
-        cursor?.use {
-            while (it.moveToNext()) {
-                val id = it.getLong(it.getColumnIndex(MediaStore.Audio.Media._ID))
-                val title = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE)) ?: "Unknown"
-                val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
-                val duration = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DURATION))
-                val data = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
-                val createDate = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED))
-                songList.add(Song(id, title, artist, duration, data,createDate))
-            }
-        }
-
-        return songList
+       return runCursor(selection,sortOrder,context)
     }
 
 
     @SuppressLint("Range")
     public fun getSongsByIds(songIds : List<Long>,context: Context) : List<Song>
     {
-        val songList = mutableListOf<Song>()
-        if (songIds.isEmpty()) return songList
+        if (songIds.isEmpty()) return mutableListOf<Song>()
 
         // Convert List<Long> to comma-separated string
         val idsString = songIds.joinToString(",")
-
 
         val selection = "${MediaStore.Audio.Media._ID} IN ($idsString) AND ${MediaStore.Audio.Media.IS_MUSIC} != 0"
 
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
-        val cursor = context.contentResolver.query(
-            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            null,
-            sortOrder
-        )
-
-        cursor?.use {
-            while (it.moveToNext()) {
-
-                val id = it.getLong(it.getColumnIndex(MediaStore.Audio.Media._ID))
-                val title = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE)) ?: "Unknown"
-                val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
-                val duration = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DURATION))
-                val data = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
-                val createDate = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED))
-                songList.add(Song(id, title, artist, duration, data,createDate))
-            }
-        }
-
-
-        return songList
+        return runCursor(selection,sortOrder,context)
     }
 
     fun getSongByPath(songPath: String,context: Context): Song?
@@ -99,6 +50,35 @@ object SongRepository{
         return loadSongs(context).find { it.data == songPath }
     }
 
+    @SuppressLint("Range")
+    private fun runCursor(selection:String, sortOrder: String, context: Context) : List<Song>
+    {
+
+        val cursor = context.contentResolver.query(
+            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            null,
+            sortOrder
+        )
+
+        val songList = mutableListOf<Song>()
+        cursor?.use {
+            while (it.moveToNext()) {
+
+                val id = it.getLong(it.getColumnIndex(MediaStore.Audio.Media._ID))
+                val title = it.getString(it.getColumnIndex(MediaStore.Audio.Media.TITLE)) ?: "Unknown"
+                val artist = it.getString(it.getColumnIndex(MediaStore.Audio.Media.ARTIST)) ?: "Unknown"
+                val duration = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DURATION))
+                val data = it.getString(it.getColumnIndex(MediaStore.Audio.Media.DATA))
+                val createDate = it.getLong(it.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED))
+                songList.add(Song(id, title, artist, duration, data,createDate))
+            }
+        }
+
+
+        return songList
+    }
     //Test
 
 

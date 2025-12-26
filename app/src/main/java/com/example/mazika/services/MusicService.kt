@@ -98,28 +98,8 @@ class MusicService : Service() {
 
     private var playlist: List<Song> = emptyList()
     private var currentSong : Song? = null;
-    /*
-    private fun start(songIds: List<Long>) {
 
-        val songs = songRepository.getSongsByIds(songIds.toList(),application)
-
-        if (songs.isEmpty()) return
-
-        // Keep the first song as "currently playing"
-        currentSong = songs[0]
-        songRepository.currentSong.value = currentSong
-        // Convert songs to MediaItems
-        val mediaItems = songs.map { song ->
-            MediaItem.fromUri(song.data)
-        }
-
-        player.setMediaItems(mediaItems)
-        player.prepare()
-        player.play()
-    }
-     */
-
-
+    val TIME_UNSET = -9223372036854775807L
     private fun start(songIds: List<Long>) {
         val songs = songRepository.getSongsByIds(songIds, application)
         if (songs.isEmpty()) return
@@ -134,7 +114,7 @@ class MusicService : Service() {
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_READY) {
                     val dur = player.duration
-                    if (dur != -9223372036854775807L) {
+                    if (dur != TIME_UNSET) {
                         SongRepository.setDuration(dur.toInt())
                     }
                 }
@@ -164,9 +144,7 @@ class MusicService : Service() {
 
     enum class Actions
     {
-        START,STOP,TOGGLE_PLAY;
-
-
+        START,STOP,TOGGLE_PLAY,NEXT,PREVIOUS;
     }
 
     private val descriptionAdapter =
