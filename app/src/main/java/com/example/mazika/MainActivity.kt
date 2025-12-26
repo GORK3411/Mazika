@@ -25,9 +25,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
 import com.example.mazika.databinding.ActivityMainBinding
-import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
-import com.example.mazika.repository.SongRepository
 import com.example.mazika.ui.playlists.PlaylistViewModel
 import com.example.mazika.ui.songs.SongViewModel
 
@@ -40,8 +38,7 @@ class MainActivity : AppCompatActivity() {
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PlayBackRepository.init(this)
-        SongRepository.init(this)
+
         //These were already when i created the project
         //This part is used for the bottom navigation Bar
         //To add a new button you need to add a new Item in "selection_menu.xml" create a fragment and add it in "mobile_navigation.xml"
@@ -64,12 +61,8 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-
         //New things added
-
         DemandPermissions()
-
         //initiate songViewModel and fetch songs
         songViewModel = ViewModelProvider(this)[SongViewModel::class.java]
         songViewModel.fetchSongs()
@@ -120,12 +113,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.progress = position
             progressText.text = formatTime(position)
         }
-        /*
-
-         */
     }
-
-
 
     private fun formatTime(milliseconds: Int): String {
         val totalSeconds = milliseconds / 1000
@@ -139,19 +127,12 @@ class MainActivity : AppCompatActivity() {
     {
         val btnPlayPause = findViewById<ImageButton>(R.id.btnPlayPause)
         btnPlayPause.setOnClickListener {
-            /*
-            // Send a command to MusicService
-            val intent = Intent(application, MusicService::class.java)
-            intent.action = MusicService.Actions.TOGGLE_PLAY.toString()
-            startService(intent)
-             */
-            PlayBackRepository.toggle()
+            songViewModel.togglePlayback()
         }
     }
 
     private fun DemandPermissions()
     {
-
         //permissions
         ActivityCompat.requestPermissions(
             this,
@@ -175,7 +156,6 @@ class MainActivity : AppCompatActivity() {
 
          */
     }
-
     @Override
     override fun onRequestPermissionsResult(
         requestCode: Int,
