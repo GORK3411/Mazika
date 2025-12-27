@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 
 class PlaylistViewModel (private val playlistRepository: PlaylistRepository): ViewModel(){
 
-    val playlist = playlistRepository.getPlaylists().asLiveData()
+    val playlists = playlistRepository.getPlaylists().asLiveData()
     fun addPlaylist(name:String) = viewModelScope.launch {
         playlistRepository.addPlaylist(Playlist(name = name))
     }

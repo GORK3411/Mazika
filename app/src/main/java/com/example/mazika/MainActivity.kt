@@ -32,6 +32,7 @@ import com.example.mazika.ui.songs.SongViewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var songViewModel: SongViewModel
+    public lateinit var playlistViewModel: PlaylistViewModel
     private val PERMISSION_REQUEST_CODE = 123
     private lateinit var binding: ActivityMainBinding
 
@@ -75,8 +76,8 @@ class MainActivity : AppCompatActivity() {
 
         val db = Room.databaseBuilder(this, MyDatabase::class.java,
             "mazika.db").build()
-        val playlistViewModel = PlaylistViewModel(PlaylistRepository(db.playlistDao))
-        playlistViewModel.playlist.observe(this) { playlists ->
+        playlistViewModel = PlaylistViewModel(PlaylistRepository(db.playlistDao))
+        playlistViewModel.playlists.observe(this) { playlists ->
             Toast.makeText(
                 this,
                 "Playlists count: ${playlists.size}",
@@ -85,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //playlistViewModel.addPlaylist("Playlist2")
+
 
 
     }
