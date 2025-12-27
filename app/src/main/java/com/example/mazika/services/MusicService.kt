@@ -19,9 +19,6 @@ import com.example.mazika.model.Song
 import com.example.mazika.repository.Actions
 import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.SongRepository
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 
 @UnstableApi
@@ -31,7 +28,7 @@ class MusicService : Service() {
     private  var notificationManager: PlayerNotificationManager? = null
     private  var songRepository = SongRepository
     private  var playBackRepository = PlayBackRepository
-    private var playlist: List<Song> = emptyList()
+    private var queue: List<Song> = emptyList()
     private var currentIndex = 0;
     val TIME_UNSET = -9223372036854775807L
 
@@ -45,7 +42,7 @@ class MusicService : Service() {
                 currentIndex = player.currentMediaItemIndex
 
                 playBackRepository.currentIndex.value = currentIndex
-                playBackRepository.currentSong.value = playlist.getOrNull(currentIndex)
+                playBackRepository.currentSong.value = queue.getOrNull(currentIndex)
 
                 notificationManager?.invalidate()
             }
@@ -92,8 +89,50 @@ class MusicService : Service() {
             Actions.START.toString()->start(intent.getLongArrayExtra("songs_ID")?.toList() ?: emptyList())//strat(intent.getStringExtra("song_uri").toString())
             Actions.STOP.toString()->stopSelf()
             Actions.TOGGLE_PLAY.toString()->toggle();
+            Actions.NEXT.toString()->next();
+            Actions.PREVIOUS.toString()->previous()
         }
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun next() {
+        if (queue.isEmpty()) return
+
+        currentIndex++
+
+        // Loop to beginning if we reach the end
+        if (currentIndex >= queue.size) {
+            currentIndex = 0
+        }
+
+        playAtIndex(currentIndex)
+    }
+
+    private fun previous() {
+        if (queue.isEmpty()) return
+
+        currentIndex--
+
+        // Loop to end if we go below zero
+        if (currentIndex < 0) {
+            currentIndex = queue.size - 1
+        }
+
+        playAtIndex(currentIndex)
+    }
+
+    private fun playAtIndex(index: Int) {
+        val song = queue[index]
+
+        val mediaItem = MediaItem.fromUri(song.data)
+
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
+
+        // 🔁 update repository state
+        PlayBackRepository.currentSong.value = song
+        PlayBackRepository.currentIndex.value = index
     }
 
     private fun toggle()
@@ -112,7 +151,7 @@ class MusicService : Service() {
         val songs = songRepository.getSongsByIds(songIds)
         if (songs.isEmpty()) return
 
-        playlist = songs
+        queue = songs
         currentIndex = 0
 
         playBackRepository.queue.value = songs

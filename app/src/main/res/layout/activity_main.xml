@@ -28,6 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:navGraph="@navigation/mobile_navigation" />
 
+    <!--
     <LinearLayout
         android:id="@+id/miniPlayer"
         android:layout_width="match_parent"
@@ -82,6 +83,88 @@
                     android:text="0:00"
                     android:textColor="@android:color/white"
                     />
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+     -->
+    <LinearLayout
+        android:id="@+id/miniPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/black"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view">
+
+        <!-- Previous -->
+        <ImageButton
+            android:id="@+id/btnPrevious"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="prev"
+            android:src="@drawable/ic_launcher_foreground"
+            />
+
+        <!-- Play / Pause -->
+        <ImageButton
+            android:id="@+id/btnPlayPause"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/play_pause"
+            android:src="@drawable/ic_launcher_foreground" />
+
+        <!-- Next -->
+        <ImageButton
+            android:id="@+id/btnNext"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="next"
+            android:src="@drawable/ic_launcher_foreground"
+            />
+
+        <!-- Song info + progress -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="8dp">
+
+            <TextView
+                android:id="@+id/currentSongTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="Song title"
+                android:textColor="@android:color/white" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/progressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:text="0:00"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
 
         </LinearLayout>

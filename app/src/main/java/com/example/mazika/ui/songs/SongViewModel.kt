@@ -43,4 +43,14 @@ class SongViewModel : ViewModel() {
     fun togglePlayback() {
         playbackRepository.toggle()
     }
+
+    fun next()
+    {
+        playbackRepository.next()
+    }
+    fun previous()
+    {
+        playbackRepository.previous()
+    }
+
 }

@@ -30,6 +30,14 @@ object PlayBackRepository {
     fun toggle() {
         sendAction(Actions.TOGGLE_PLAY)
     }
+    fun next()
+    {
+        sendAction(Actions.NEXT);
+    }
+    fun previous()
+    {
+        sendAction(Actions.PREVIOUS)
+    }
 
     private fun requireContext(): Context {
         check(::appContext.isInitialized) {

@@ -129,7 +129,19 @@ class MainActivity : AppCompatActivity() {
         btnPlayPause.setOnClickListener {
             songViewModel.togglePlayback()
         }
+
+        val btnNext = findViewById<ImageButton>(R.id.btnNext)
+        val btnPrev = findViewById<ImageButton>(R.id.btnPrevious)
+        btnNext.setOnClickListener {
+            songViewModel.next()
+        }
+        btnPrev.setOnClickListener {
+            songViewModel.previous()
+        }
+
     }
+
+
 
     private fun DemandPermissions()
     {
