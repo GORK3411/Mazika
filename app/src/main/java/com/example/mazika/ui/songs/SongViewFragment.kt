@@ -29,6 +29,7 @@ import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.repository.SongRepository
 import com.example.mazika.services.MusicService
+import com.example.mazika.ui.playlists.PlaylistPickerBottomSheet
 import com.example.mazika.ui.playlists.PlaylistViewModel
 import kotlinx.coroutines.launch
 
@@ -118,9 +119,21 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
                     return true
                 }
                 R.id.menu_add_to_playlist-> {
+                    /*
                     viewLifecycleOwner.lifecycleScope.launch {
                         addSongsToPlaylist()
                     }
+                     */
+                    val sheet = PlaylistPickerBottomSheet { playlistId ->
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            playlistRepository.addSongsToPlaylist(
+                                playlistId,
+                                tracker.selection.toList()
+                            )
+                        }
+
+                    }
+                    sheet.show(parentFragmentManager, "PlaylistPicker")
                     mode?.finish()
                     return true
                 }
