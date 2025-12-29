@@ -124,12 +124,18 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
                         addSongsToPlaylist()
                     }
                      */
-                    val sheet = PlaylistPickerBottomSheet { playlistId ->
+                    val selectedIds = tracker.selection.toList()
+                    val sheet = PlaylistPickerBottomSheet() { playlistId ->
                         viewLifecycleOwner.lifecycleScope.launch {
                             playlistRepository.addSongsToPlaylist(
                                 playlistId,
-                                tracker.selection.toList()
+                                selectedIds
                             )
+                            val tmp = playlistRepository.getSongsForPlaylist(playlistId)
+                            for (a in tmp)
+                            {
+                                print(a.title)
+                            }
                         }
 
                     }

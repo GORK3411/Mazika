@@ -9,7 +9,7 @@ import com.example.mazika.model.PlaylistSong
 
 @Database(
     entities = [Playlist::class, PlaylistSong::class],
-    version = 2
+    version = 3
 )
 abstract class MyDatabase :RoomDatabase() {
     abstract val playlistDao : PlaylistDao

@@ -18,6 +18,6 @@ interface PlaylistSongDao {
         FROM PlaylistSong
         WHERE playlistId = :playlistId
     """)
-    suspend fun getSongIdsForPlaylist(playlistId: Long): List<Long>
+    suspend fun getSongIdsForPlaylist(playlistId: Int): List<Long>
 }
 

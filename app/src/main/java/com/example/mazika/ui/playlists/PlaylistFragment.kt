@@ -25,7 +25,17 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
         recyclerView = view.findViewById(R.id.playlist_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            /*
             val adapter = PlaylistAdapter(playlists)
+
+             */
+            val adapter = PlaylistAdapter(
+                playlists,
+                R.layout.playlist_view,
+                bind = { holder, playlist -> holder.textView.text = playlist.name },
+                onClick = { playlist -> /* normal click */ }
+            )
+
             recyclerView.adapter = adapter
         }
     }

@@ -16,13 +16,13 @@ object PlaylistRepository {
     fun getPlaylists() = playlistDao.getAll()
     suspend fun addPlaylist(playlist: Playlist) = playlistDao.insert(playlist)
 
-    suspend fun getSongsForPlaylist(playlistId:Long) : List<Song>
+    suspend fun getSongsForPlaylist(playlistId: Int) : List<Song>
     {
         val songIds = playlistSongDao.getSongIdsForPlaylist(playlistId)
         return SongRepository.getSongsByIds(songIds)
     }
 
-    suspend fun addSongsToPlaylist(playlistId:Long,songIds : List<Long>)
+    suspend fun addSongsToPlaylist(playlistId:Int,songIds : List<Long>)
     {
         for (songId in songIds)
         {

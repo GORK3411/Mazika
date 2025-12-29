@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
-        playlistViewModel.addPlaylist("Playlist2")
+        playlistViewModel.addPlaylist("COOL PLAYLIST")
 
     }
 

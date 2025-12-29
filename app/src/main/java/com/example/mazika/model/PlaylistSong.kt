@@ -8,6 +8,6 @@ import androidx.room.ForeignKey
     primaryKeys = ["playlistId", "songId"]
 )
 data class PlaylistSong(
-    val playlistId: Long,
+    val playlistId: Int,
     val songId: Long
 )
