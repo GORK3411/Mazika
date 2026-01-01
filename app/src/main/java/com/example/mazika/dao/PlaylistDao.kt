@@ -13,4 +13,5 @@ fun getAll() : Flow<List<Playlist>>
 
 @Insert
 suspend fun insert(playlist: Playlist)
+
 }

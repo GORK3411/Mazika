@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.media3.common.util.UnstableApi
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.room.Room
@@ -46,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         //Note that both the fragment and item should have the same ID
         //Also the ID needs to be added "appBarConfiguration" inside "MainActivity.kt"
         binding = ActivityMainBinding.inflate(layoutInflater)
+
+
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
@@ -86,7 +89,8 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
-        playlistViewModel.addPlaylist("COOL PLAYLIST")
+
+        //playlistViewModel.addPlaylist("COOL PLAYLIST")
 
     }
 
@@ -192,5 +196,9 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        val tmp = super.onSupportNavigateUp();
+        return tmp;
+    }
 
 }

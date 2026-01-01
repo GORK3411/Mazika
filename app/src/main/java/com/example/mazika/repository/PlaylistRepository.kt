@@ -29,4 +29,8 @@ object PlaylistRepository {
             playlistSongDao.addSongToPlaylist(PlaylistSong(playlistId,songId))
         }
     }
+    suspend fun getPlaylistById(playlistId:Int)
+    {
+        
+    }
 }
