@@ -3,6 +3,7 @@ package com.example.mazika.ui.playlists
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavOptions
@@ -12,16 +13,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
+import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.ui.songs.SongDetailsLookup
+import com.example.mazika.ui.songs.SongKeyProvider
 
 
 class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
     private lateinit var playlistViewModel: PlaylistViewModel
     private lateinit var recyclerView: RecyclerView
+    private lateinit var tracker:SelectionTracker<Long>;
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,6 +46,10 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
                 R.layout.playlist_view,
                 bind = { holder, playlist -> holder.textView.text = playlist.name },
                 onClick = { playlist -> /* normal click */
+                    if(tracker.selection.size()!=0)
+                    {
+                        return@PlaylistAdapter
+                    }
                     val bundle = Bundle().apply {
                         putInt("playlistId", playlist.id)
                         putString("playlistName", playlist.name)
@@ -59,8 +69,29 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
 
                 }
             )
+            recyclerView.adapter = adapter
 
-            recyclerView.adapter = adapter;
+            tracker = SelectionTracker.Builder<Long>(
+                "playlistSelection",
+                recyclerView,
+                StableIdKeyProvider(recyclerView),
+                PlaylistDetailsLookup(recyclerView),
+                StorageStrategy.createLongStorage()
+            )
+                .withSelectionPredicate(SelectionPredicates.createSelectAnything())
+                .build()
+
+            adapter.tracker = tracker
+            tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+                override fun onSelectionChanged() {
+                    val count = tracker.selection.size()
+                    Toast.makeText(requireActivity(), ""+count, Toast.LENGTH_SHORT).show()
+
+                }
+            })
+
         }
+
+
     }
 }
