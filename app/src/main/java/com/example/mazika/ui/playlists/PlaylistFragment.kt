@@ -68,6 +68,7 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
                        //findNavController().navigate(R.id.action_to_details, bundle)
                         val intent = Intent(requireContext(), PlaylistDetailsActivity::class.java)
                         intent.putExtra("playlistId", playlist.id)
+                        intent.putExtra("playlistName", playlist.name)
                         startActivity(intent)
 
                     }

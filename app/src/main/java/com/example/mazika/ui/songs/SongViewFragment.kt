@@ -1,36 +1,25 @@
 package com.example.mazika.ui.songs
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.ActionMode
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
-import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
-import com.example.mazika.MyDatabase
 import com.example.mazika.R
 import com.example.mazika.model.Song
 import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
-import com.example.mazika.repository.SongRepository
-import com.example.mazika.services.MusicService
 import com.example.mazika.ui.playlists.PlaylistPickerBottomSheet
-import com.example.mazika.ui.playlists.PlaylistViewModel
 import kotlinx.coroutines.launch
 
 /**
@@ -52,7 +41,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         playlistRepository = PlaylistRepository
 
         //initialise RecyclerView
-        recyclerView = view.findViewById(R.id.song_recycler_view)
+        recyclerView = view.findViewById(R.id.added_song_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         songViewModel.songs.observe(viewLifecycleOwner) { songs ->
             val adapter = SongAdapter(songs) { song -> onSongClick(song) }

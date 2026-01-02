@@ -18,7 +18,7 @@
         android:text="This is Songs" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/song_recycler_view"
+        android:id="@+id/added_song_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:choiceMode="multipleChoiceModal"/>
