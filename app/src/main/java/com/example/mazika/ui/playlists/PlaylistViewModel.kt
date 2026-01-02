@@ -13,4 +13,15 @@ class PlaylistViewModel (private val playlistRepository: PlaylistRepository): Vi
     fun addPlaylist(name:String) = viewModelScope.launch {
         playlistRepository.addPlaylist(Playlist(name = name))
     }
+    fun addChildrenToPlaylist(playlistId : Int, selectedIdsInt: List<Int>)
+    {
+        viewModelScope.launch {
+                playlistRepository.addChildToPlaylist(
+                    playlistId,
+                    selectedIdsInt
+                )
+
+
+        }
+    }
 }

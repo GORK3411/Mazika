@@ -26,19 +26,14 @@ import kotlinx.coroutines.launch
  * A fragment representing a list of Items.
  */
 class SongViewFragment : Fragment(R.layout.fragment_item_list) {
-
-    private lateinit var playlistRepository: PlaylistRepository
     private lateinit var songViewModel: SongViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var tracker:SelectionTracker<Long>;
-    private val playBackRepository = PlayBackRepository
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         songViewModel = ViewModelProvider(requireActivity())[SongViewModel::class.java]
-        playlistRepository = PlaylistRepository
+
 
         //initialise RecyclerView
         recyclerView = view.findViewById(R.id.added_song_recycler_view)
@@ -81,8 +76,7 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
         if(tracker.selection.size()==0)
         {
             val selectedIds = listOf<Long>(song.id)
-            playSelectedSongs(selectedIds)
-            // TODO: play the song using ExoPlayer
+            songViewModel.playSongs(selectedIds)
         }
     }
 
@@ -108,25 +102,12 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
                     return true
                 }
                 R.id.menu_add_to_playlist-> {
-                    /*
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        addSongsToPlaylist()
-                    }
-                     */
                     val selectedIds = tracker.selection.toList()
                     val sheet = PlaylistPickerBottomSheet() { playlistId ->
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            playlistRepository.addSongsToPlaylist(
+                           songViewModel.addSongsToPlaylist(
                                 playlistId,
                                 selectedIds
-                            )
-                            val tmp = playlistRepository.getSongsForPlaylist(playlistId)
-                            for (a in tmp)
-                            {
-                                print(a.title)
-                            }
-                        }
-
+                           )
                     }
                     sheet.show(parentFragmentManager, "PlaylistPicker")
                     mode?.finish()
@@ -136,36 +117,16 @@ class SongViewFragment : Fragment(R.layout.fragment_item_list) {
             }
             return false
         }
-
-
         override fun onDestroyActionMode(mode: ActionMode?) {
             // Clear selection when ActionMode ends
             tracker?.clearSelection()
             actionMode = null
         }
     }
-    private suspend fun addSongsToPlaylist()
-    {
-        val selectedIds = tracker.selection.toList()
-        playlistRepository.addSongsToPlaylist(1,selectedIds)
-        val tmp = playlistRepository.getSongsForPlaylist(1)
-        for (a in tmp)
-        {
-            print(a.title)
-        }
-    }
     private fun runSelectedSongsFromTracker()
     {
         val selectedIds = tracker.selection.toList()
-        playSelectedSongs(selectedIds)
+        songViewModel.playSongs(selectedIds)
     }
-
-    @OptIn(UnstableApi::class)
-    fun playSelectedSongs(selectedIds:List<Long>)
-    {
-        playBackRepository.play(selectedIds)
-    }
-
-
 
 }
