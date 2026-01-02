@@ -17,4 +17,6 @@ suspend fun insert(playlist: Playlist)
     @Query("SELECT name FROM Playlist WHERE id IN (:playlistIds)")
     suspend fun getPlaylistNames(playlistIds: List<Int>): List<String>
 
+    @Query("SELECT * FROM Playlist  WHERE id IN (:playlistIds) ")
+    suspend fun getPlaylistsById(playlistIds: List<Int>) : List<Playlist>
 }

@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_activity) {
 
     private lateinit var playlistRepository: PlaylistRepository
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var songRecyclerView: RecyclerView
+    private lateinit var playlistRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,16 +27,29 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
             return
         }
 
-        recyclerView = findViewById(R.id.song_recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        songRecyclerView = findViewById(R.id.song_recycler_view)
+        songRecyclerView.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
             val songs = playlistRepository.getSongsForPlaylist(playlistId)
-            recyclerView.adapter = SongAdapter(songs) { song ->
+            songRecyclerView.adapter = SongAdapter(songs) { song ->
                 // song click logic
                 print(song.title)
             }
         }
+
+        //Playlist
+        playlistRecyclerView = findViewById(R.id.playlist_recycler_view)
+        playlistRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        lifecycleScope.launch {
+            val playlists = playlistRepository.getChildPlaylists(playlistId)
+            playlistRecyclerView.adapter = PlaylistAdapter( playlists,
+                R.layout.playlist_view,
+                bind = { holder, playlist -> holder.textView.text = playlist.name },
+                onClick = { playlist -> /* normal click */})
+
+            }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }

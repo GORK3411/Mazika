@@ -67,4 +67,11 @@ object PlaylistRepository {
         }
     }
 
+     suspend fun getChildPlaylists(playlistId:Int) : List<Playlist>
+    {
+        val childIds = playlistPlaylistDao.getChildIdsForPlaylist(playlistId)
+        val childPlaylists  = playlistDao.getPlaylistsById(childIds)
+        return childPlaylists
+    }
+
 }
