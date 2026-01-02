@@ -6,6 +6,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.model.Playlist
 import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.ui.songs.SongDetailsLookup
 import com.example.mazika.ui.songs.SongKeyProvider
@@ -106,6 +108,16 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
 
         }
 
+        //Add Playlist Button
+        val btnAddPlaylist = view.findViewById<Button>(R.id.btnCreatePlaylist)
+        btnAddPlaylist.setOnClickListener {
+
+            CreatePlaylistDialogFragment { playlistName ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    playlistRepository.addPlaylist(Playlist(playlistName))
+                }
+            }.show(parentFragmentManager, "CreatePlaylistDialog")
+        }
 
     }
 
