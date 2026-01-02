@@ -14,4 +14,7 @@ fun getAll() : Flow<List<Playlist>>
 @Insert
 suspend fun insert(playlist: Playlist)
 
+    @Query("SELECT name FROM Playlist WHERE id IN (:playlistIds)")
+    suspend fun getPlaylistNames(playlistIds: List<Int>): List<String>
+
 }

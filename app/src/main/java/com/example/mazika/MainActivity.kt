@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity() {
         val db = Room.databaseBuilder(this, MyDatabase::class.java,
             "mazika.db")
             .fallbackToDestructiveMigration(false).build()
-        PlaylistRepository.init(db.playlistDao,db.playlistSongDao)
+        PlaylistRepository.init(db.playlistDao,db.playlistSongDao,db.playlistPlaylistDao)
         playlistViewModel = PlaylistViewModel(PlaylistRepository)
         playlistViewModel.playlists.observe(this) { playlists ->
             Toast.makeText(
@@ -90,7 +90,11 @@ class MainActivity : AppCompatActivity() {
             ).show()
         }
 
-        //playlistViewModel.addPlaylist("COOL PLAYLIST")
+
+        playlistViewModel.addPlaylist("Sad")
+        playlistViewModel.addPlaylist("BOMBA")
+        //playlistViewModel.addPlaylist("Another PLAYLIST ")
+
 
     }
 

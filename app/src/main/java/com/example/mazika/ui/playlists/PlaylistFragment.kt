@@ -2,10 +2,14 @@ package com.example.mazika.ui.playlists
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.ActionMode
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
@@ -19,11 +23,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.ui.songs.SongDetailsLookup
 import com.example.mazika.ui.songs.SongKeyProvider
+import kotlinx.coroutines.launch
 
 
 class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
+    private val playlistRepository : PlaylistRepository = PlaylistRepository
     private lateinit var playlistViewModel: PlaylistViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var tracker:SelectionTracker<Long>;
@@ -86,12 +93,77 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
                 override fun onSelectionChanged() {
                     val count = tracker.selection.size()
                     Toast.makeText(requireActivity(), ""+count, Toast.LENGTH_SHORT).show()
-
+                    if (count > 0) {
+                        if (actionMode == null) {
+                            actionMode = requireActivity().startActionMode(actionModeCallback)
+                        }
+                        actionMode?.title = "$count selected"
+                    } else {
+                        actionMode?.finish()
+                    }
                 }
             })
 
         }
 
 
+    }
+
+    private var actionMode: ActionMode? = null
+
+    private val actionModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            menu?.clear()
+            mode?.menuInflater?.inflate(R.menu.selection_menu, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = false
+
+        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            when(item?.itemId) {
+                R.id.menu_play -> {
+                    mode?.finish()
+                    return true
+                }
+                R.id.menu_add_to_playlist-> {
+
+                    val selectedIdsInt: List<Int> = tracker.selection.map { it.toInt() }
+
+
+                    val sheet = PlaylistPickerBottomSheet() { playlistId ->
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            try {
+                                playlistRepository.addChildToPlaylist(
+                                    playlistId,
+                                    selectedIdsInt
+                                )
+                            }
+                            catch (e: Exception)
+                            {
+                                Toast.makeText(activity, e.message, Toast.LENGTH_SHORT).show()
+                            }
+
+                        }
+
+                    }
+                    sheet.show(parentFragmentManager, "PlaylistPicker")
+
+
+
+                    mode?.finish()
+                    return true
+                }
+
+            }
+            return false
+        }
+
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            // Clear selection when ActionMode ends
+            tracker?.clearSelection()
+            actionMode = null
+        }
     }
 }
