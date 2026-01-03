@@ -83,13 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         PlaylistRepository.init(db.playlistDao,db.playlistSongDao,db.playlistPlaylistDao)
         playlistViewModel = PlaylistViewModel(PlaylistRepository)
-        playlistViewModel.playlists.observe(this) { playlists ->
-            Toast.makeText(
-                this,
-                "Playlists count: ${playlists.size}",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+
 
 
         //playlistViewModel.addPlaylist("Sad")

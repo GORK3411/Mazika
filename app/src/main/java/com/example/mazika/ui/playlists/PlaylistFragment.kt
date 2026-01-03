@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import kotlinx.coroutines.launch
 
 
 class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
@@ -80,7 +82,7 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
             tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
                 override fun onSelectionChanged() {
                     val count = tracker.selection.size()
-                    Toast.makeText(requireActivity(), ""+count, Toast.LENGTH_SHORT).show()
+
                     if (count > 0) {
                         if (actionMode == null) {
                             actionMode = requireActivity().startActionMode(actionModeCallback)
@@ -130,12 +132,16 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
 
 
                     val sheet = PlaylistPickerBottomSheet() { playlistId ->
-                        try {
-                            playlistViewModel.addChildrenToPlaylist(playlistId,selectedIdsInt)
-                        }
-                        catch (e: Exception)
-                        {
-                            Toast.makeText( activity, e.message, Toast.LENGTH_SHORT).show()
+                        lifecycleScope.launch {
+                            try {
+                                playlistViewModel.addChildrenToPlaylist(playlistId,selectedIdsInt)
+                            }
+                            catch (e: Exception)
+                            {
+                                MessageDialogFragment(e.message.toString())
+                                    .show(parentFragmentManager, "Fail")
+                                //Toast.makeText( activity, e.message, Toast.LENGTH_SHORT).show()
+                            }
                         }
 
                     }
