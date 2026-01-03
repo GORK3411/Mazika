@@ -8,6 +8,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,8 @@ class SongAdapter(
                   private val onSongClick: (Song) -> Unit
 ) : ListAdapter<Song, SongAdapter.SongVH>(Diff) {
 
+    var tracker: SelectionTracker<Long>? = null
+    init { setHasStableIds(true) }
     private var nowPlayingId: Long? = null
     private var nowPlayingIsPlaying: Boolean = false
 
