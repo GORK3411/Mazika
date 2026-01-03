@@ -24,4 +24,11 @@ class PlaylistViewModel (private val playlistRepository: PlaylistRepository): Vi
 
         }
     }
+
+    fun deletePlaylists(list: List<Int>)
+    {
+        viewModelScope.launch {
+            playlistRepository.deletePlaylists(list)
+        }
+    }
 }

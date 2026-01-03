@@ -1,6 +1,7 @@
 package com.example.mazika.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.mazika.model.Playlist
@@ -19,4 +20,7 @@ suspend fun insert(playlist: Playlist)
 
     @Query("SELECT * FROM Playlist  WHERE id IN (:playlistIds) ")
     suspend fun getPlaylistsById(playlistIds: List<Int>) : List<Playlist>
+
+    @Query("DELETE FROM playlist WHERE id IN (:playlistIds)")
+    suspend fun deletePlaylistsByIds(playlistIds: List<Int>)
 }

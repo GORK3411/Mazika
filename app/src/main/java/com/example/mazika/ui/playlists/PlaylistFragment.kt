@@ -110,21 +110,23 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
     private val actionModeCallback = object : ActionMode.Callback {
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             menu?.clear()
-            mode?.menuInflater?.inflate(R.menu.selection_menu, menu)
+            mode?.menuInflater?.inflate(R.menu.playlist_selection_menu, menu)
             return true
         }
 
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = false
 
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            val selectedIdsInt: List<Int> = tracker.selection.map { it.toInt() }
+
             when(item?.itemId) {
-                R.id.menu_play -> {
+                R.id.menu_delete -> {
+                    playlistViewModel.deletePlaylists(selectedIdsInt)
                     mode?.finish()
                     return true
                 }
                 R.id.menu_add_to_playlist-> {
 
-                    val selectedIdsInt: List<Int> = tracker.selection.map { it.toInt() }
 
 
                     val sheet = PlaylistPickerBottomSheet() { playlistId ->

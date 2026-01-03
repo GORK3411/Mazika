@@ -74,4 +74,9 @@ object PlaylistRepository {
         return childPlaylists
     }
 
+    suspend fun deletePlaylists(list: List<Int>)
+    {
+        playlistDao.deletePlaylistsByIds(list)
+    }
+
 }

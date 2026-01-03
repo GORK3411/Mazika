@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         addPlayBar()
 
         //Playlist
-        deleteDatabase("mazika.db")
+        //deleteDatabase("mazika.db")
         val db = Room.databaseBuilder(this, MyDatabase::class.java,
             "mazika.db")
             .fallbackToDestructiveMigration(false).build()
