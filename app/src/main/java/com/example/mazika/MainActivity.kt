@@ -107,6 +107,7 @@ class MainActivity : AppCompatActivity() {
 
         miniPlayer.visibility = View.GONE
 
+
         songViewModel.currentSong.observe(this) { song ->
             if (song == null) {
                 miniPlayer.visibility = View.GONE
@@ -115,6 +116,7 @@ class MainActivity : AppCompatActivity() {
                 tvSongTitle.text = song.title
             }
         }
+
 
         songViewModel.duration.observe(this) { duration ->
             progressBar.max = duration.toInt()
