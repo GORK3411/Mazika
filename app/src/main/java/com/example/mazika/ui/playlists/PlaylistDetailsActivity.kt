@@ -47,9 +47,12 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
             val playlists = playlistRepository.getChildPlaylists(playlistId)
 
             // Added songs
-            addedSongsRecycler.adapter = SongAdapter() { song ->
-                println(song.title)
+            val addedSongAdapter = SongAdapter() { song ->
+            println(song.title)
             }
+            addedSongAdapter.submitList(songs)
+            addedSongsRecycler.adapter = addedSongAdapter
+
 
             // Child playlists
             playlistRecycler.adapter = PlaylistAdapter(
@@ -80,12 +83,12 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
                     }
                 }
             }
-            /*
-            allSongsRecycler.adapter = SongAdapter(allSongs) { song ->
-                println(song.title)
+            val allSongsAdapter = SongAdapter() { song ->
+            println(song.title)
             }
+            allSongsAdapter.submitList(allSongs)
+            allSongsRecycler.adapter =allSongsAdapter
 
-             */
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

@@ -15,7 +15,7 @@ import com.example.mazika.R
 import com.example.mazika.model.Song
 
 class SongAdapter(
-    private val onSongClick: (Song) -> Unit
+                  private val onSongClick: (Song) -> Unit
 ) : ListAdapter<Song, SongAdapter.SongVH>(Diff) {
 
     private var nowPlayingId: Long? = null
