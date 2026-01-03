@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="app_bg">#0B0B0F</color>
+    <color name="surface_card">#14141C</color>
+    <color name="surface_card_2">#1C1C26</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="accent">#7C4DFF</color>
+    <color name="divider_soft">#22FFFFFF</color>
 </resources>

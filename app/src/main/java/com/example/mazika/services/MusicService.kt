@@ -1,6 +1,5 @@
 package com.example.mazika.services
 
-
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -20,50 +19,73 @@ import com.example.mazika.repository.Actions
 import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.SongRepository
 
-
 @UnstableApi
 class MusicService : Service() {
+
     private lateinit var player: ExoPlayer
     private lateinit var mediaSession: MediaSession
-    private  var notificationManager: PlayerNotificationManager? = null
-    private  var songRepository = SongRepository
-    private  var playBackRepository = PlayBackRepository
+    private var notificationManager: PlayerNotificationManager? = null
+
+    private val songRepository = SongRepository
+    private val playBackRepository = PlayBackRepository
+
     private var queue: List<Song> = emptyList()
-    private var currentIndex = 0;
-    val TIME_UNSET = -9223372036854775807L
+    private var currentIndex = 0
+
+    private val handler = Handler(Looper.getMainLooper())
+
+    private val progressRunnable = object : Runnable {
+        override fun run() {
+            // ✅ Always publish position (even if paused, after seek etc.)
+            val pos = player.currentPosition.toInt().coerceAtLeast(0)
+            playBackRepository.position.value = pos
+
+            // duration can become available later
+            val dur = player.duration
+            if (dur > 0 ) {
+                playBackRepository.duration.value = dur.toInt()
+            }
+
+            handler.postDelayed(this, 300)
+        }
+    }
 
     override fun onCreate() {
         super.onCreate()
-        // 1. Create player
+
         player = ExoPlayer.Builder(this).build()
 
         player.addListener(object : Player.Listener {
+
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-                currentIndex = player.currentMediaItemIndex
+                currentIndex = player.currentMediaItemIndex.coerceAtLeast(0)
 
                 playBackRepository.currentIndex.value = currentIndex
                 playBackRepository.currentSong.value = queue.getOrNull(currentIndex)
 
+                // when song changes reset position instantly
+                playBackRepository.position.value = 0
+
                 notificationManager?.invalidate()
             }
+
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_READY) {
                     val dur = player.duration
-                    if (dur != TIME_UNSET) {
+                    if (dur > 0) {
                         playBackRepository.duration.value = dur.toInt()
                     }
                 }
             }
+
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 playBackRepository.isPlaying.value = isPlaying
             }
         })
 
-        // 2. Create MediaSession
         mediaSession = MediaSession(this, "MusicService")
         mediaSession.isActive = true
 
-        // 3. Create notification manager
         notificationManager = PlayerNotificationManager.Builder(
             this,
             1,
@@ -71,80 +93,44 @@ class MusicService : Service() {
         )
             .setMediaDescriptionAdapter(descriptionAdapter)
             .setNotificationListener(notificationListener)
-
             .build()
 
         notificationManager?.setPlayer(player)
         notificationManager?.setMediaSessionToken(mediaSession.sessionToken)
+
+        // start progress loop (safe even before songs)
+        handler.post(progressRunnable)
     }
+
     override fun onBind(intent: Intent?): IBinder? {
-        TODO("Not yet implemented")
         return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            Actions.START.name -> {
+                val ids = intent.getLongArrayExtra("songs_ID")?.toList() ?: emptyList()
+                start(ids)
+            }
 
-        when(intent?.action)
-        {
-            Actions.START.toString()->start(intent.getLongArrayExtra("songs_ID")?.toList() ?: emptyList())//strat(intent.getStringExtra("song_uri").toString())
-            Actions.STOP.toString()->stopSelf()
-            Actions.TOGGLE_PLAY.toString()->toggle();
-            Actions.NEXT.toString()->next();
-            Actions.PREVIOUS.toString()->previous()
-        }
-        return super.onStartCommand(intent, flags, startId)
-    }
+            Actions.STOP.name -> {
+                stopPlaybackAndService()
+            }
 
-    private fun next() {
-        if (queue.isEmpty()) return
+            Actions.TOGGLE_PLAY.name -> toggle()
 
-        currentIndex++
+            Actions.NEXT.name -> next()
 
-        // Loop to beginning if we reach the end
-        if (currentIndex >= queue.size) {
-            currentIndex = 0
-        }
+            Actions.PREVIOUS.name -> previous()
 
-        playAtIndex(currentIndex)
-    }
-
-    private fun previous() {
-        if (queue.isEmpty()) return
-
-        currentIndex--
-
-        // Loop to end if we go below zero
-        if (currentIndex < 0) {
-            currentIndex = queue.size - 1
-        }
-
-        playAtIndex(currentIndex)
-    }
-
-    private fun playAtIndex(index: Int) {
-        val song = queue[index]
-
-        val mediaItem = MediaItem.fromUri(song.data)
-
-        player.setMediaItem(mediaItem)
-        player.prepare()
-        player.play()
-
-        // 🔁 update repository state
-        PlayBackRepository.currentSong.value = song
-        PlayBackRepository.currentIndex.value = index
-    }
-
-    private fun toggle()
-    {
-        if (player.isPlaying) {
-            player.pause()
-        } else {
-            // Only play if there is something to play
-            if (player.mediaItemCount > 0) {
-                player.play()
+            Actions.SEEK_TO.name -> {
+                val pos = intent.getLongExtra("positionMs", 0L).coerceAtLeast(0L)
+                player.seekTo(pos)
+                playBackRepository.position.value = pos.toInt()
             }
         }
+
+        return START_STICKY
     }
 
     private fun start(songIds: List<Long>) {
@@ -157,76 +143,86 @@ class MusicService : Service() {
         playBackRepository.queue.value = songs
         playBackRepository.currentIndex.value = 0
         playBackRepository.currentSong.value = songs[0]
+        playBackRepository.position.value = 0
 
         val mediaItems = songs.map { MediaItem.fromUri(it.data) }
-        player.setMediaItems(mediaItems)
+
+        player.setMediaItems(mediaItems, /* resetPosition */ true)
         player.prepare()
-
         player.play()
+    }
 
+    private fun toggle() {
+        if (player.isPlaying) {
+            player.pause()
+        } else {
+            if (player.mediaItemCount > 0) player.play()
+        }
+    }
 
-        // start updating progress
-        handler.post(progressRunnable)
+    private fun next() {
+        if (player.mediaItemCount == 0) return
+        player.seekToNextMediaItem()
+        player.play()
+    }
+
+    private fun previous() {
+        if (player.mediaItemCount == 0) return
+        player.seekToPreviousMediaItem()
+        player.play()
+    }
+
+    private fun stopPlaybackAndService() {
+        try {
+            player.stop()
+        } catch (_: Exception) {}
+        stopForeground(true)
+        stopSelf()
     }
 
     override fun onDestroy() {
         notificationManager?.setPlayer(null)
+        notificationManager = null
+
+        handler.removeCallbacks(progressRunnable)
+
         player.release()
         mediaSession.release()
-        handler.removeCallbacks(progressRunnable)
+
         super.onDestroy()
     }
 
-
-
-
     private val descriptionAdapter =
         object : PlayerNotificationManager.MediaDescriptionAdapter {
+
             override fun getCurrentContentTitle(player: Player): String {
-                return playBackRepository.currentSong.value?.title ?:"Unknown"//"Song Title"
+                return playBackRepository.currentSong.value?.title ?: "Unknown"
             }
 
             override fun getCurrentContentText(player: Player): String? {
-                return  playBackRepository.currentSong.value?.artist ?:"Unknown"
+                return playBackRepository.currentSong.value?.artist ?: "Unknown"
             }
 
             override fun getCurrentLargeIcon(
                 player: Player,
                 callback: PlayerNotificationManager.BitmapCallback
-            ): Bitmap? {
-                return null
-            }
+            ): Bitmap? = null
 
             override fun createCurrentContentIntent(player: Player): PendingIntent? {
+                // optional: open app when tap notification
                 return null
             }
         }
 
     private val notificationListener =
         object : PlayerNotificationManager.NotificationListener {
+
             override fun onNotificationPosted(id: Int, notification: Notification, ongoing: Boolean) {
                 startForeground(id, notification)
             }
 
             override fun onNotificationCancelled(id: Int, dismissedByUser: Boolean) {
-                stopForeground(true)
-                stopSelf()
+                stopPlaybackAndService()
             }
         }
-
-    //keep track of the song's duration
-    private val handler = Handler(Looper.getMainLooper())
-
-    private val progressRunnable = object : Runnable {
-        override fun run() {
-            if (player.isPlaying) {
-                // Publish current position to PlaybackRepository
-                playBackRepository.position.value = player.currentPosition.toInt()
-            }
-            handler.postDelayed(this, 500)
-        }
-    }
-
-
-
 }

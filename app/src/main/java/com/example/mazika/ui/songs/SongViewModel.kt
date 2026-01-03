@@ -24,7 +24,6 @@ class SongViewModel : ViewModel() {
             val songs = songRepository.loadSongs()
             _songs.postValue(songs)
         }
-
     }
 
     //Currently playing song
@@ -52,5 +51,8 @@ class SongViewModel : ViewModel() {
     {
         playbackRepository.previous()
     }
-
+    fun seekTo(positionMs: Int)
+    {
+        playbackRepository.seekTo(positionMs.toLong())
+    }
 }
