@@ -23,6 +23,7 @@ import com.example.mazika.ui.playlists.PlaylistDetailsLookup
 import com.example.mazika.ui.playlists.PlaylistPickerBottomSheet
 import com.example.mazika.ui.playlists.PlaylistViewModel
 import com.example.mazika.ui.songs.SongAdapter
+import com.example.mazika.ui.songs.SongDetailsLookup
 import com.example.mazika.ui.songs.SongViewModel
 import kotlinx.coroutines.launch
 
@@ -105,7 +106,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             "songSelection",
             recyclerView,
             StableIdKeyProvider(recyclerView),
-            PlaylistDetailsLookup(recyclerView),
+            SongDetailsLookup(recyclerView),
             StorageStrategy.createLongStorage()
         )
             .withSelectionPredicate(SelectionPredicates.createSelectAnything())
@@ -178,6 +179,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             when(item?.itemId) {
                 R.id.menu_play->{
                     PlayBackRepository.play(selectedIds)
+                    mode?.finish()
+                    return true
                 }
                 R.id.menu_add_to_play_queue->
                 {
@@ -213,5 +216,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             tracker?.clearSelection()
             actionMode = null
         }
+
     }
 }

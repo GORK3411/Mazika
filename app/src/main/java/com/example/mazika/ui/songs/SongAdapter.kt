@@ -8,6 +8,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -91,11 +92,13 @@ class SongAdapter(
                 menu.menu.add("Share")
                 menu.menu.add("Details")
                 menu.setOnMenuItemClickListener { item ->
-                    Toast.makeText(v.context, "${item.title}: ${song.title}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(v.context, "${item.title}: ${song.title}", Toast.LENGTH_SHORT)
+                        .show()
                     true
                 }
                 menu.show()
             }
+            songId = song.id
         }
 
         private fun formatDuration(ms: Long): String {
@@ -104,5 +107,14 @@ class SongAdapter(
             val sec = totalSec % 60
             return "%d:%02d".format(min, sec)
         }
+
+        private var songId: Long = RecyclerView.NO_ID
+
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+            object : ItemDetailsLookup.ItemDetails<Long>() {
+                override fun getPosition(): Int = bindingAdapterPosition
+                override fun getSelectionKey(): Long = songId
+
+            }
     }
 }
