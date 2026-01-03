@@ -9,8 +9,23 @@ import kotlinx.coroutines.launch
 
 class PlaylistViewModel (private val playlistRepository: PlaylistRepository): ViewModel(){
 
-    val playlist = playlistRepository.getPlaylists().asLiveData()
+    val playlists = playlistRepository.getPlaylists().asLiveData()
     fun addPlaylist(name:String) = viewModelScope.launch {
         playlistRepository.addPlaylist(Playlist(name = name))
+    }
+    suspend fun addChildrenToPlaylist(playlistId : Int, selectedIdsInt: List<Int>)
+    {
+                playlistRepository.addChildToPlaylist(
+                    playlistId,
+                    selectedIdsInt
+                )
+
+    }
+
+    fun deletePlaylists(list: List<Int>)
+    {
+        viewModelScope.launch {
+            playlistRepository.deletePlaylists(list)
+        }
     }
 }

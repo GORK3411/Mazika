@@ -7,7 +7,14 @@ import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import com.example.mazika.model.Song
 import com.example.mazika.services.MusicService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 
 @OptIn(UnstableApi::class)
 object PlayBackRepository {
@@ -15,13 +22,25 @@ object PlayBackRepository {
     private lateinit var appContext: Context
     fun init(context: Context) { appContext = context.applicationContext }
 
-    val currentSong = MutableStateFlow<Song?>(null)
     val isPlaying = MutableStateFlow(false)
     val position = MutableStateFlow(0)   // ms
     val duration = MutableStateFlow(0)   // ms
 
     val queue = MutableStateFlow<List<Song>>(emptyList())
     val currentIndex = MutableStateFlow(0)
+
+    private val repositoryScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    val currentSong : StateFlow<Song?> =
+        combine(queue, currentIndex) { q, index ->
+            q.getOrNull(index)
+        }.stateIn(
+            scope = repositoryScope, // or applicationScope
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
 
     fun play(songIds: List<Long>) {
         sendAction(Actions.START) {
@@ -59,4 +78,5 @@ object PlayBackRepository {
             requireContext().startService(intent)
         }
     }
+
 }

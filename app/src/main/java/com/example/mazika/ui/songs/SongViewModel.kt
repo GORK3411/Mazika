@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mazika.model.Song
 import com.example.mazika.repository.PlayBackRepository
+import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.repository.SongRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +25,7 @@ class SongViewModel : ViewModel() {
             val songs = songRepository.loadSongs()
             _songs.postValue(songs)
         }
+
     }
 
     //Currently playing song
@@ -55,4 +57,9 @@ class SongViewModel : ViewModel() {
     {
         playbackRepository.seekTo(positionMs.toLong())
     }
+
+    fun addSongsToPlaylist(playlistId: Int, ids: List<Long>) = viewModelScope.launch {
+        PlaylistRepository.addSongsToPlaylist(playlistId, ids)
+    }
 }
+

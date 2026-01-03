@@ -8,7 +8,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.OptIn
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +22,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
@@ -28,18 +35,26 @@ import com.example.mazika.ui.songs.SongViewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var songViewModel: SongViewModel
-    private lateinit var binding: ActivityMainBinding
+    public lateinit var playlistViewModel: PlaylistViewModel
     private val PERMISSION_REQUEST_CODE = 123
+    private lateinit var binding: ActivityMainBinding
+
 
     @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //These were already when i created the project
+        //This part is used for the bottom navigation Bar
+        //To add a new button you need to add a new Item in "selection_menu.xml" create a fragment and add it in "mobile_navigation.xml"
+        //Note that both the fragment and item should have the same ID
+        //Also the ID needs to be added "appBarConfiguration" inside "MainActivity.kt"
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_list,
@@ -61,17 +76,22 @@ class MainActivity : AppCompatActivity() {
         // Mini-player setup
         setupMiniPlayer(navController)
 
-        // Playlist
-        val db = Room.databaseBuilder(this, MyDatabase::class.java, "mazika.db").build()
-        val playlistViewModel = PlaylistViewModel(PlaylistRepository(db.playlistDao))
-        playlistViewModel.playlist.observe(this) { playlists ->
-            Toast.makeText(this, "Playlists count: ${playlists.size}", Toast.LENGTH_SHORT).show()
-        }
-    }
-        // arrow
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        return navController.navigateUp() || super.onSupportNavigateUp()
+        //Playlist
+        //deleteDatabase("mazika.db")
+        val db = Room.databaseBuilder(this, MyDatabase::class.java,
+            "mazika.db")
+            .fallbackToDestructiveMigration(false).build()
+
+        PlaylistRepository.init(db.playlistDao,db.playlistSongDao,db.playlistPlaylistDao)
+        playlistViewModel = PlaylistViewModel(PlaylistRepository)
+
+
+
+        //playlistViewModel.addPlaylist("Sad")
+        //playlistViewModel.addPlaylist("BOMBA")
+        //playlistViewModel.addPlaylist("Another PLAYLIST ")
+
+
     }
 
     private fun setupMiniPlayer(navController: NavController) {
@@ -167,6 +187,7 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == PERMISSION_REQUEST_CODE) {

@@ -27,9 +27,10 @@ object SongRepository {
     @SuppressLint("Range")
     fun loadSongs() : List<Song> {
         //condition to load songs
-        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0"
+        val selection = "${MediaStore.Audio.Media.IS_MUSIC} != 0 AND " +
+                "${MediaStore.Audio.Media.DATA} NOT LIKE '%WhatsApp/Media/WhatsApp Voice Notes/%' AND " +
+                "${MediaStore.Audio.Media.DATA} NOT LIKE '%WhatsApp/Media/WhatsApp Audio/%'"
 
-        //order at the end
         val sortOrder = "${MediaStore.Audio.Media.DATE_ADDED} DESC"
 
        return runCursor(selection,sortOrder)
@@ -50,6 +51,8 @@ object SongRepository {
 
         return runCursor(selection,sortOrder)
     }
+
+
 
     @SuppressLint("Range")
     private fun runCursor(selection:String, sortOrder: String) : List<Song>
