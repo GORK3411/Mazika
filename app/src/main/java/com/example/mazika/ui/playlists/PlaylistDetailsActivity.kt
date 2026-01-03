@@ -1,6 +1,8 @@
 package com.example.mazika.ui.playlists
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -8,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Playlist
 import com.example.mazika.model.Song
+import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.ui.songs.SongAdapter
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
         }
         val playlistName = intent.getStringExtra("playlistName");
         supportActionBar?.title = playlistName ?: "Playlist"
+
 
         val addedSongsRecycler = findViewById<RecyclerView>(R.id.added_song_recycler_view)
         val playlistRecycler = findViewById<RecyclerView>(R.id.playlist_recycler_view)
@@ -75,7 +79,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
                     }
                 }
             }
-            allSongsRecycler.adapter = SongAdapter(songs) { song ->
+            allSongsRecycler.adapter = SongAdapter(allSongs) { song ->
                 println(song.title)
             }
         }
@@ -86,5 +90,22 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.playlist_details_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_play -> {
+                val allSongsId = allSongs.map { it.id }
+                PlayBackRepository.play(allSongsId)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 }

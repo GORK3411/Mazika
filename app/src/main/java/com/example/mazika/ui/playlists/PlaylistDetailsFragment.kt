@@ -34,7 +34,6 @@ class PlaylistDetailsFragment():Fragment(R.layout.playlist_details_fragment) {
                 recyclerView.adapter = adapter
         }
 
-
     }
 
 
