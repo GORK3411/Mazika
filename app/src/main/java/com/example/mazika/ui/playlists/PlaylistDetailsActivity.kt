@@ -17,13 +17,14 @@ import kotlinx.coroutines.launch
 
 class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_activity) {
 
+    private var playlistId: Int = -1;
     private val playlistRepository = PlaylistRepository
     private val allSongs: ArrayList<Song> = ArrayList<Song>();
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val playlistId = intent.getIntExtra("playlistId", -1)
+         playlistId = intent.getIntExtra("playlistId", -1)
         if (playlistId == -1) {
             finish()
             return
@@ -105,6 +106,25 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
                 finish()
                 true
             }
+            R.id.action_delete->
+            {
+                lifecycleScope.launch {
+                playlistRepository.deletePlaylists(listOf(playlistId))
+                }
+                finish()
+                true
+            }
+            R.id.action_rename->
+            {
+                SimpleDialogFragment("Rename") { playlistName ->
+                    lifecycleScope.launch {
+                    playlistRepository.renamePlaylist(playlistId,playlistName)
+                        supportActionBar?.title = playlistName
+                    }
+                }.show(supportFragmentManager, "CreatePlaylistDialog")
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

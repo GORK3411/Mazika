@@ -98,7 +98,7 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
         val btnAddPlaylist = view.findViewById<Button>(R.id.btnCreatePlaylist)
         btnAddPlaylist.setOnClickListener {
 
-            CreatePlaylistDialogFragment { playlistName ->
+            SimpleDialogFragment("Create") { playlistName ->
                 playlistViewModel.addPlaylist(playlistName)
             }.show(parentFragmentManager, "CreatePlaylistDialog")
         }

@@ -79,4 +79,9 @@ object PlaylistRepository {
         playlistDao.deletePlaylistsByIds(list)
     }
 
+    suspend fun renamePlaylist(playlistId : Int,newName:String)
+    {
+        playlistDao.renamePlaylist(playlistId,newName)
+    }
+
 }

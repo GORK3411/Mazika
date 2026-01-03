@@ -7,4 +7,18 @@
         android:title="Play"
         android:icon="@drawable/ic_launcher_foreground"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_rename"
+        android:title="Rename"
+
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="Delete"
+
+        app:showAsAction="ifRoom" />
+
+
 </menu>

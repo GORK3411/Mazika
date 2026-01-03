@@ -8,8 +8,8 @@ import android.widget.EditText
 import androidx.fragment.app.DialogFragment
 import com.example.mazika.R
 
-class CreatePlaylistDialogFragment(
-    private val onCreate: (String) -> Unit
+class SimpleDialogFragment(private val buttonText: String,
+                           private val onClickFunction: (String) -> Unit
 ) : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -20,10 +20,10 @@ class CreatePlaylistDialogFragment(
 
         return AlertDialog.Builder(requireContext())
             .setView(view)
-            .setPositiveButton("Create") { _, _ ->
+            .setPositiveButton(buttonText) { _, _ ->
                 val name = editText.text.toString().trim()
                 if (name.isNotEmpty()) {
-                    onCreate(name)
+                    onClickFunction(name)
                 }
             }
             .setNegativeButton("Cancel", null)

@@ -23,4 +23,7 @@ suspend fun insert(playlist: Playlist)
 
     @Query("DELETE FROM playlist WHERE id IN (:playlistIds)")
     suspend fun deletePlaylistsByIds(playlistIds: List<Int>)
+
+    @Query("UPDATE playlist SET name=:newName WHERE id=:playlistId")
+    suspend fun renamePlaylist(playlistId: Int,newName: String)
 }
