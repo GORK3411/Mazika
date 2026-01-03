@@ -27,10 +27,17 @@ object PlayBackRepository {
     val queue = MutableStateFlow<List<Song>>(emptyList())
     val currentIndex = MutableStateFlow(0)
 
-    val currentSong =
+    private val repositoryScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    val currentSong : StateFlow<Song?> =
         combine(queue, currentIndex) { q, index ->
             q.getOrNull(index)
-        }
+        }.stateIn(
+            scope = repositoryScope, // or applicationScope
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
 
 
     fun play(songIds: List<Long>) {

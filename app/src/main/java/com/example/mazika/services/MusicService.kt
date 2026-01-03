@@ -39,6 +39,7 @@ class MusicService : Service() {
 
         player.addListener(object : Player.Listener {
             override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                playBackRepository.currentIndex.value = player.currentMediaItemIndex
                 notificationManager?.invalidate()
             }
             override fun onPlaybackStateChanged(state: Int) {
@@ -146,12 +147,13 @@ class MusicService : Service() {
     private val descriptionAdapter =
         object : PlayerNotificationManager.MediaDescriptionAdapter {
             override fun getCurrentContentTitle(player: Player): String {
-                return playBackRepository.currentSong.asLiveData().value?.title ?:"Unknown"//"Song Title"
+                return playBackRepository.currentSong.value?.title ?: "Unknown"
             }
 
-            override fun getCurrentContentText(player: Player): String? {
-                return  playBackRepository.currentSong.asLiveData().value?.artist ?:"Unknown"
+            override fun getCurrentContentText(player: Player): String {
+                return playBackRepository.currentSong.value?.artist ?: "Unknown"
             }
+
 
             override fun getCurrentLargeIcon(
                 player: Player,
