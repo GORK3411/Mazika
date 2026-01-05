@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
@@ -28,16 +29,12 @@ class PlaylistPickerBottomSheet(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        playlistViewModel = (activity as MainActivity).playlistViewModel
+        playlistViewModel = ViewModelProvider(this)[PlaylistViewModel::class.java]
+
         //initialise RecyclerView
         recyclerView = view.findViewById(R.id.playlistRecycler)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
-            /*
-            val adapter = PlaylistAdapter(playlists)
-             */
             val adapter = PlaylistAdapter(
-                playlists,
                 R.layout.playlist_view,  // different layout
                 bind = { holder, playlist ->
                     holder.textView.text = playlist.name
@@ -48,9 +45,9 @@ class PlaylistPickerBottomSheet(
                     dismiss()
                 }
             )
-
-
             recyclerView.adapter = adapter
+        playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+            adapter.submitList(playlists)
         }
 
     }

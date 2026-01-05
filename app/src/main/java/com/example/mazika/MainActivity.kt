@@ -35,7 +35,7 @@ import com.example.mazika.ui.songs.SongViewModel
 class MainActivity : AppCompatActivity() {
 
     private lateinit var songViewModel: SongViewModel
-    public lateinit var playlistViewModel: PlaylistViewModel
+
     private val PERMISSION_REQUEST_CODE = 123
     private lateinit var binding: ActivityMainBinding
 
@@ -78,18 +78,8 @@ class MainActivity : AppCompatActivity() {
 
         //Playlist
         //deleteDatabase("mazika.db")
-        val db = Room.databaseBuilder(this, MyDatabase::class.java,
-            "mazika.db")
-            .fallbackToDestructiveMigration(false).build()
-
-        PlaylistRepository.init(db.playlistDao,db.playlistSongDao,db.playlistPlaylistDao)
-        playlistViewModel = PlaylistViewModel(PlaylistRepository)
 
 
-
-        //playlistViewModel.addPlaylist("Sad")
-        //playlistViewModel.addPlaylist("BOMBA")
-        //playlistViewModel.addPlaylist("Another PLAYLIST ")
 
 
     }

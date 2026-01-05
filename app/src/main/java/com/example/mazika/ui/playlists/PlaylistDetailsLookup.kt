@@ -8,6 +8,7 @@ class PlaylistDetailsLookup(private val recyclerView: RecyclerView) : ItemDetail
     override fun getItemDetails(e: MotionEvent): ItemDetails<Long>? {
         val view = recyclerView.findChildViewUnder(e.x, e.y) ?: return null
         val holder = recyclerView.getChildViewHolder(view) as PlaylistViewHolder
+        if (holder.bindingAdapterPosition == RecyclerView.NO_POSITION) return null
         return object : ItemDetails<Long>() {
             override fun getPosition() = holder.adapterPosition
             override fun getSelectionKey() = holder.itemId

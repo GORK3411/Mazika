@@ -19,6 +19,6 @@ class PlaylistViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         object : ItemDetailsLookup.ItemDetails<Long>() {
             override fun getPosition(): Int = bindingAdapterPosition
             override fun getSelectionKey(): Long =
-                (bindingAdapter as PlaylistAdapter).playlists[bindingAdapterPosition].id.toLong()
+                (bindingAdapter as PlaylistAdapter).currentList[bindingAdapterPosition].id.toLong()
         }
 }

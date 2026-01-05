@@ -7,7 +7,8 @@ import com.example.mazika.model.Playlist
 import com.example.mazika.repository.PlaylistRepository
 import kotlinx.coroutines.launch
 
-class PlaylistViewModel (private val playlistRepository: PlaylistRepository): ViewModel(){
+class PlaylistViewModel (): ViewModel(){
+    private val playlistRepository = PlaylistRepository
 
     val playlists = playlistRepository.getPlaylists().asLiveData()
     fun addPlaylist(name:String) = viewModelScope.launch {

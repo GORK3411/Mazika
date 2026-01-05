@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.ui.songs.SongViewModel
 import kotlinx.coroutines.launch
 
 
@@ -28,72 +30,71 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        playlistViewModel = (activity as MainActivity).playlistViewModel
+        playlistViewModel = ViewModelProvider(this)[PlaylistViewModel::class.java]
         //initialise RecyclerView
         recyclerView = view.findViewById(R.id.playlist_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+
+        val adapter = PlaylistAdapter(
+            R.layout.playlist_view,
+            bind = { holder, playlist -> holder.textView.text = playlist.name },
+            onClick = { playlist -> /* normal click */
+                if(tracker.selection.size()!=0)
+                {
+                    return@PlaylistAdapter
+                }
+                val bundle = Bundle().apply {
+                    putInt("playlistId", playlist.id)
+                    putString("playlistName", playlist.name)
+                }
+
+                try {
+                    //findNavController().navigate(R.id.action_to_details, bundle)
+                    val intent = Intent(requireContext(), PlaylistDetailsActivity::class.java)
+                    intent.putExtra("playlistId", playlist.id)
+                    intent.putExtra("playlistName", playlist.name)
+                    startActivity(intent)
+
+                }
+                catch (e: Exception)
+                {
+                    print(e)
+                }
+
+            }
+        )
+        recyclerView.adapter = adapter
+
+        tracker = SelectionTracker.Builder<Long>(
+            "playlistSelection",
+            recyclerView,
+            StableIdKeyProvider(recyclerView),
+            PlaylistDetailsLookup(recyclerView),
+            StorageStrategy.createLongStorage()
+        )
+            .withSelectionPredicate(SelectionPredicates.createSelectAnything())
+            .build()
+
+        adapter.tracker = tracker
+        tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+            override fun onSelectionChanged() {
+                val count = tracker.selection.size()
+
+                if (count > 0) {
+                    if (actionMode == null) {
+                        actionMode = requireActivity().startActionMode( actionModeCallback)
+                    }
+                    actionMode?.title = "$count selected"
+                } else {
+                    actionMode?.finish()
+                }
+            }
+        })
+
+
         playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
-            /*
-            val adapter = PlaylistAdapter(playlists)
-
-             */
-            val adapter = PlaylistAdapter(
-                playlists,
-                R.layout.playlist_view,
-                bind = { holder, playlist -> holder.textView.text = playlist.name },
-                onClick = { playlist -> /* normal click */
-                    if(tracker.selection.size()!=0)
-                    {
-                        return@PlaylistAdapter
-                    }
-                    val bundle = Bundle().apply {
-                        putInt("playlistId", playlist.id)
-                        putString("playlistName", playlist.name)
-                    }
-
-                    try {
-                       //findNavController().navigate(R.id.action_to_details, bundle)
-                        val intent = Intent(requireContext(), PlaylistDetailsActivity::class.java)
-                        intent.putExtra("playlistId", playlist.id)
-                        intent.putExtra("playlistName", playlist.name)
-                        startActivity(intent)
-
-                    }
-                    catch (e: Exception)
-                    {
-                        print(e)
-                    }
-
-                }
-            )
-            recyclerView.adapter = adapter
-
-            tracker = SelectionTracker.Builder<Long>(
-                "playlistSelection",
-                recyclerView,
-                StableIdKeyProvider(recyclerView),
-                PlaylistDetailsLookup(recyclerView),
-                StorageStrategy.createLongStorage()
-            )
-                .withSelectionPredicate(SelectionPredicates.createSelectAnything())
-                .build()
-
-            adapter.tracker = tracker
-            tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
-                override fun onSelectionChanged() {
-                    val count = tracker.selection.size()
-
-                    if (count > 0) {
-                        if (actionMode == null) {
-                            actionMode = requireActivity().startActionMode(actionModeCallback)
-                        }
-                        actionMode?.title = "$count selected"
-                    } else {
-                        actionMode?.finish()
-                    }
-                }
-            })
-
+            adapter.submitList(playlists)
         }
 
         //Add Playlist Button
