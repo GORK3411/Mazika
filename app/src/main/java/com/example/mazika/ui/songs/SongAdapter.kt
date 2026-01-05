@@ -20,6 +20,7 @@ class SongAdapter(
                   private val onSongClick: (Song) -> Unit
 ) : ListAdapter<Song, SongAdapter.SongVH>(Diff) {
 
+
     var tracker: SelectionTracker<Long>? = null
     init { setHasStableIds(true) }
     private var nowPlayingId: Long? = null

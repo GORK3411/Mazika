@@ -18,6 +18,7 @@ import com.example.mazika.model.Song
 import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.ui.songs.SongAdapter
+import com.example.mazika.ui.songs.SongDetailsLookup
 import kotlinx.coroutines.launch
 
 class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_activity) {
@@ -111,7 +112,33 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        //Add Song Tracker
 
+
+        songTracker = SelectionTracker.Builder<Long>(
+            "songSelection",
+            addedSongsRecycler,
+            StableIdKeyProvider(addedSongsRecycler),
+            SongDetailsLookup(addedSongsRecycler),
+            StorageStrategy.createLongStorage()
+        )
+            .withSelectionPredicate(SelectionPredicates.createSelectAnything())
+            .build()
+
+        addedSongAdapter.tracker = songTracker
+        songTracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+            override fun onSelectionChanged() {
+                val count = songTracker.selection.size()
+                if (count > 0) {
+                    if (actionMode == null) {
+                        actionMode = startSupportActionMode(songActionModeCallback)
+                    }
+                    actionMode?.title = "$count selected"
+                } else {
+                    actionMode?.finish()
+                }
+            }
+        })
 
     }
 
@@ -219,6 +246,39 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
         }
 
 
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            // Clear selection when ActionMode ends
+            playlistTracker?.clearSelection()
+            actionMode = null
+        }
+    }
+
+    private val songActionModeCallback = object : ActionMode.Callback {
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            menu?.clear()
+            mode?.menuInflater?.inflate(R.menu.playlist_details_children_menu, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = false
+
+        override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+            val selectedIdsInt: List<Long> = songTracker.selection.toList()
+            var res = false
+            when(item?.itemId) {
+                R.id.action_delete -> {
+
+                    lifecycleScope.launch {
+                        playlistRepository.removeSongsFromPlaylist(playlistId,selectedIdsInt)
+                        loadData()
+                    }
+                    mode?.finish()
+                    res = true
+                }
+            }
+            songTracker.clearSelection()
+            return res
+        }
         override fun onDestroyActionMode(mode: ActionMode?) {
             // Clear selection when ActionMode ends
             playlistTracker?.clearSelection()

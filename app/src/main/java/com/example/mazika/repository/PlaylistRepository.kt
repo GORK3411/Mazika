@@ -89,4 +89,8 @@ object PlaylistRepository {
         playlistPlaylistDao.removeChildrenFromPlaylist(playlistId,childrenIds)
     }
 
+    suspend fun removeSongsFromPlaylist(playlistId : Int,songsId:List<Long>)
+    {
+        playlistSongDao.removeSongsFromPlaylist(playlistId ,songsId)
+    }
 }

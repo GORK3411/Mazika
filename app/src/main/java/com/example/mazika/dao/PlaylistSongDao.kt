@@ -19,5 +19,8 @@ interface PlaylistSongDao {
         WHERE playlistId = :playlistId
     """)
     suspend fun getSongIdsForPlaylist(playlistId: Int): List<Long>
+
+    @Query(value = "DELETE FROM PlaylistSong WHERE playlistId = :playlistId AND songId IN (:songsId)")
+    suspend fun removeSongsFromPlaylist(playlistId: Int, songsId: List<Long>)
 }
 
