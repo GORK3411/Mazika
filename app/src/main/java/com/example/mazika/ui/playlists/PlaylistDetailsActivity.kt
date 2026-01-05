@@ -30,6 +30,9 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
 
     private lateinit var playlistRecycler: RecyclerView
     private lateinit var playlistAdapter: PlaylistAdapter
+    private lateinit var addedSongAdapter: SongAdapter
+
+    private lateinit var allSongsAdapter: SongAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +55,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
         playlistRecycler.layoutManager = LinearLayoutManager(this)
         allSongsRecycler.layoutManager = LinearLayoutManager(this)
         // Added songs
-        val addedSongAdapter = SongAdapter() { song -> }
+        addedSongAdapter = SongAdapter() { song -> }
         addedSongsRecycler.adapter = addedSongAdapter
 
 
@@ -101,10 +104,19 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
             }
         })
 
-
-        val allSongsAdapter = SongAdapter() { song -> }
+        allSongsAdapter = SongAdapter() { song -> }
         allSongsRecycler.adapter =allSongsAdapter
         //Loading Data
+        loadData()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+
+
+    }
+
+    fun loadData()
+    {
         lifecycleScope.launch {
             // Load everything safely
             val songs = playlistRepository.getSongsForPlaylist(playlistId)
@@ -114,6 +126,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
             // All songs (same data or different source later)
             ///DO THIS LATER
 
+            allSongs.clear()
             for (song in songs)
             {
                 allSongs.add(song)
@@ -128,14 +141,8 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
                     }
                 }
             }
-
             allSongsAdapter.submitList(allSongs)
         }
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -199,6 +206,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
 
                     lifecycleScope.launch {
                         playlistRepository.removeChildrenFromPlaylist(playlistId,selectedIdsInt)
+                        loadData()
                     }
                     mode?.finish()
 
