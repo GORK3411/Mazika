@@ -120,12 +120,12 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
 
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             val selectedIdsInt: List<Int> = tracker.selection.map { it.toInt() }
-
+            var res = false
             when(item?.itemId) {
                 R.id.menu_delete -> {
                     playlistViewModel.deletePlaylists(selectedIdsInt)
                     mode?.finish()
-                    return true
+                    res = true
                 }
                 R.id.menu_add_to_playlist-> {
 
@@ -146,15 +146,13 @@ class PlaylistFragment:Fragment(R.layout.fragment_playlist) {
 
                     }
                     sheet.show(parentFragmentManager, "PlaylistPicker")
-
-
-
                     mode?.finish()
-                    return true
+                    res = true
                 }
 
             }
-            return false
+            tracker.clearSelection()
+            return res
         }
 
 
