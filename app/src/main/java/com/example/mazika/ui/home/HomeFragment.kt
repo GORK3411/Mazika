@@ -38,7 +38,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var fullList: List<Song> = emptyList()
     private var query: String = ""
-    private var sortMode: SortMode = SortMode.NAME
+    private var sortMode: SortMode = SortMode.DATE
 
     private enum class SortMode { NAME, ARTIST, DATE }
 
@@ -53,11 +53,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         // Adapter: clicking a song should start playing immediately (Spotify behavior)
         songAdapter = SongAdapter(
             onSongClick = { clickedSong ->
+                /*
                 val visible = songAdapter.currentList
                 val ids = visible.map { it.id }.toMutableList()
                 ids.remove(clickedSong.id)
                 ids.add(0, clickedSong.id)
                 songViewModel.playSongs(ids)
+                 */
+                val selectedIds = tracker.selection.toList()
+                if(selectedIds.size==0)
+                {
+                    songViewModel.playSongs(listOf(clickedSong.id))
+                }
             }
         )
 
