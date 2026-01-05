@@ -1,5 +1,6 @@
 package com.example.mazika.ui.playlists
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.view.ActionMode
 import android.view.Menu
@@ -69,7 +70,21 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
                 holder.textView.text = playlist.name
             },
             onClick = { playlist ->
+                if(playlistTracker.selection.size()!=0)
+                    return@PlaylistAdapter
                 // handle click
+                try {
+                    //findNavController().navigate(R.id.action_to_details, bundle)
+                    val intent = Intent(this, PlaylistDetailsActivity::class.java)
+                    intent.putExtra("playlistId", playlist.id)
+                    intent.putExtra("playlistName", playlist.name)
+                    startActivity(intent)
+
+                }
+                catch (e: Exception)
+                {
+                    print(e)
+                }
             }
         )
 
