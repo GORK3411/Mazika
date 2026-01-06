@@ -7,7 +7,7 @@ The application focuses on simplicity, offline usability, and efficient playlist
 
 🎯 Motivation
 
-The motivation behind this project was to create a lightweight and offline-friendly music player that offers better control over playlists compared to many existing applications, which are often cluttered or dependent on internet connectivity.
+The motivation behind this project was to create an offline-friendly music player that offers better control over playlists compared to many existing applications.
 
 ✨ Main Features
 
@@ -18,8 +18,6 @@ Play, pause, and navigate through songs
 Create, edit, and delete playlists
 
 Support for nested playlists (playlist inside another playlist)
-
-Prevents cyclic playlist relationships
 
 Smooth and responsive UI using RecyclerView
 
@@ -53,4 +51,3 @@ Room Database
 
 MediaStore API
 
-Dialogs for user feedback
