@@ -6,6 +6,7 @@ import com.example.mazika.dao.PlaylistSongDao
 import com.example.mazika.model.Playlist
 import com.example.mazika.model.PlaylistPlaylist
 import com.example.mazika.model.PlaylistSong
+import com.example.mazika.model.PlaylistSummary
 import com.example.mazika.model.Song
 
 object PlaylistRepository {
@@ -93,5 +94,9 @@ object PlaylistRepository {
     suspend fun removeSongsFromPlaylist(playlistId : Int,songsId:List<Long>)
     {
         playlistSongDao.removeSongsFromPlaylist(playlistId ,songsId)
+    }
+    suspend fun getPlaylistsWithSongCount(playlistIds: List<Int>) : List<PlaylistSummary>
+    {
+        return playlistDao.getPlaylistsWithSongCount(playlistIds);
     }
 }

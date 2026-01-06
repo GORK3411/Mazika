@@ -100,7 +100,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                 val count = tracker.selection.size()
 
                 // refresh strokes
-                adapter.notifyDataSetChanged()
+                //adapter.notifyDataSetChanged()
 
                 if (count > 0) {
                     if (actionMode == null) {

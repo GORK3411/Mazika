@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mazika.model.Playlist
+import com.example.mazika.model.PlaylistSummary
 import com.example.mazika.repository.PlaylistRepository
 import kotlinx.coroutines.launch
 
@@ -28,5 +29,10 @@ class PlaylistViewModel (): ViewModel(){
 
     suspend fun addChildrenToPlaylist(parentId: Int, childIds: List<Int>) {
         playlistRepository.addChildToPlaylist(parentId, childIds)
+    }
+
+    suspend fun getPlaylistsWithSongCount(playlistIds: List<Int>) : List<PlaylistSummary>
+    {
+        return playlistRepository.getPlaylistsWithSongCount(playlistIds)
     }
 }

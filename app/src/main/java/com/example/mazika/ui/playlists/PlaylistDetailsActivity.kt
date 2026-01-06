@@ -43,7 +43,7 @@ class PlaylistDetailsActivity : AppCompatActivity(R.layout.playlist_details_acti
         supportActionBar?.title = playlistName ?: "Playlist"
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val addedSongsRecycler = findViewById<RecyclerView>(R.id.added_song_recycler_view)
+        val addedSongsRecycler = findViewById<RecyclerView>(R.id.added_song_recycler_view2)
         val childPlaylistsRecycler = findViewById<RecyclerView>(R.id.playlist_recycler_view)
         val allSongsRecycler = findViewById<RecyclerView>(R.id.all_song_recycler_view)
 

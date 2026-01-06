@@ -25,6 +25,18 @@ interface PlaylistDao {
     """)
     fun getAllWithSongCount(): Flow<List<PlaylistSummary>>
 
+    @Query("""
+    SELECT p.id AS id,
+           p.name AS name,
+           COUNT(ps.songId) AS songCount
+    FROM Playlist p
+    LEFT JOIN PlaylistSong ps ON ps.playlistId = p.id
+    WHERE p.id IN (:playlistIds)
+    GROUP BY p.id
+    """)
+    suspend fun getPlaylistsWithSongCount(playlistIds: List<Int>): List<PlaylistSummary>
+
+
     @Insert
     suspend fun insert(playlist: Playlist)
 
