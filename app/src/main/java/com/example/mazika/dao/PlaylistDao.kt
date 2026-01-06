@@ -1,19 +1,32 @@
 package com.example.mazika.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.mazika.model.Playlist
+import com.example.mazika.model.PlaylistSummary
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlaylistDao {
-@Query("SELECT * FROM Playlist")
-fun getAll() : Flow<List<Playlist>>
 
-@Insert
-suspend fun insert(playlist: Playlist)
+    @Query("SELECT * FROM Playlist")
+    fun getAll(): Flow<List<Playlist>>
+
+    // ✅ NEW: playlist list + #songs
+    @Query("""
+        SELECT p.id AS id,
+               p.name AS name,
+               COUNT(ps.songId) AS songCount
+        FROM Playlist p
+        LEFT JOIN PlaylistSong ps ON ps.playlistId = p.id
+        GROUP BY p.id
+        ORDER BY LOWER(p.name)
+    """)
+    fun getAllWithSongCount(): Flow<List<PlaylistSummary>>
+
+    @Insert
+    suspend fun insert(playlist: Playlist)
 
     @Query("SELECT name FROM Playlist WHERE id IN (:playlistIds)")
     suspend fun getPlaylistNames(playlistIds: List<Int>): List<String>

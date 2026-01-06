@@ -8,50 +8,53 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.model.PlaylistSummary
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class PlaylistPickerBottomSheet(
-                                private val onPlaylistSelected: (playlistId: Int) -> Unit
+    private val onPlaylistSelected: (playlistId: Int) -> Unit
 ) : BottomSheetDialogFragment() {
 
     private lateinit var playlistViewModel: PlaylistViewModel
     private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: PlaylistAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         return inflater.inflate(R.layout.bottomsheet_playlist_picker, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         playlistViewModel = (activity as MainActivity).playlistViewModel
-        //initialise RecyclerView
+
         recyclerView = view.findViewById(R.id.playlistRecycler)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter = PlaylistAdapter(
+            onClick = { pl ->
+                onPlaylistSelected(pl.id)
+                dismiss()
+            },
+            onMoreClick = { _, _ ->
+                // no "more" menu in picker
+            }
+        )
+        recyclerView.adapter = adapter
+
         playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
-            /*
-            val adapter = PlaylistAdapter(playlists)
-             */
-            val adapter = PlaylistAdapter(
-                playlists,
-                R.layout.playlist_view,  // different layout
-                bind = { holder, playlist ->
-                    holder.textView.text = playlist.name
-                    // any other setup
-                },
-                onClick = { playlist ->
-                    onPlaylistSelected(playlist.id)
-                    dismiss()
-                }
-            )
-
-
-            recyclerView.adapter = adapter
+            val summaries: List<PlaylistSummary> = playlists.map {
+                PlaylistSummary(
+                    id = it.id,
+                    name = it.name,
+                    songCount = 0 // keep it simple for picker (fast)
+                )
+            }
+            adapter.submitList(summaries)
         }
-
     }
 }

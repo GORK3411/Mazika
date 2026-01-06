@@ -1,8 +1,152 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    android:background="@color/app_bg"
+    android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Appearance"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@color/text_primary"
+            android:paddingBottom="12dp"/>
+
+        <!-- Theme mode card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/divider_soft"
+            android:layout_marginBottom="14dp"
+            app:cardBackgroundColor="@color/surface_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Theme"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="8dp"/>
+
+                <RadioGroup
+                    android:id="@+id/rgTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RadioButton
+                        android:id="@+id/rbThemeSystem"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="System default"
+                        android:textColor="@color/text_primary"/>
+
+                    <RadioButton
+                        android:id="@+id/rbThemeLight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Light"
+                        android:textColor="@color/text_primary"/>
+
+                    <RadioButton
+                        android:id="@+id/rbThemeDark"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Dark"
+                        android:textColor="@color/text_primary"/>
+                </RadioGroup>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Accent card -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/divider_soft"
+            app:cardBackgroundColor="@color/surface_card">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Colors"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:paddingBottom="10dp"/>
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/cgAccent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipPurple"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Purple"
+                        app:chipCornerRadius="18dp"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="@color/divider_soft"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipGreen"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Green"
+                        app:chipCornerRadius="18dp"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="@color/divider_soft"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipBlue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Blue"
+                        app:chipCornerRadius="18dp"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="@color/divider_soft"/>
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOrange"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Orange"
+                        app:chipCornerRadius="18dp"
+                        app:chipStrokeWidth="1dp"
+                        app:chipStrokeColor="@color/divider_soft"/>
+                </com.google.android.material.chip.ChipGroup>
+
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

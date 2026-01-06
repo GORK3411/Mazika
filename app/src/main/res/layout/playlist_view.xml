@@ -1,23 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="?android:attr/activatedBackgroundIndicator">
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="?android:attr/textColorSecondary"
+    app:cardBackgroundColor="?android:attr/colorBackground">
 
-    <TextView
-        android:id="@+id/playlistName"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="TextView"
+        android:padding="12dp">
 
-        android:textColor="#D90A0A"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <!-- Cover placeholder -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardPlaylistCover"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="?android:attr/colorBackground"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerInside"
+                android:src="@android:drawable/ic_menu_sort_by_size"
+                android:alpha="0.85"
+                android:tint="?attr/colorPrimary"/>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- More -->
+        <ImageButton
+            android:id="@+id/btnPlaylistMore"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="More"
+            android:src="@android:drawable/ic_menu_more"
+            android:tint="?android:attr/textColorSecondary"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <!-- Playlist Name -->
+        <TextView
+            android:id="@+id/tvPlaylistName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Playlist name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toEndOf="@id/cardPlaylistCover"
+            app:layout_constraintEnd_toStartOf="@id/btnPlaylistMore"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Song count -->
+        <TextView
+            android:id="@+id/tvPlaylistCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="0 songs"
+            android:textSize="13sp"
+            android:textColor="?android:attr/textColorSecondary"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintStart_toStartOf="@id/tvPlaylistName"
+            app:layout_constraintEnd_toStartOf="@id/btnPlaylistMore"
+            app:layout_constraintTop_toBottomOf="@id/tvPlaylistName"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

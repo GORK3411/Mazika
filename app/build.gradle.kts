@@ -60,6 +60,8 @@ dependencies {
     implementation("io.coil-kt:coil:2.6.0")
 
     implementation(libs.androidx.room.ktx)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -78,6 +80,7 @@ dependencies {
     implementation("androidx.room:room-runtime:${room_version}")
     ksp("androidx.room:room-compiler:$room_version")
 
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
 
 

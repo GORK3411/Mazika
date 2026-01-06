@@ -4,16 +4,16 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_bg"
+    android:background="?android:attr/colorBackground"
     android:paddingTop="?attr/actionBarSize">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/app_bg"
-        app:itemIconTint="@color/bottom_nav_item"
-        app:itemTextColor="@color/bottom_nav_item"
+        android:background="?android:attr/colorBackground"
+        app:itemIconTint="@color/bottom_nav_item_colors"
+        app:itemTextColor="@color/bottom_nav_item_colors"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -31,7 +31,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:navGraph="@navigation/mobile_navigation" />
 
-    <!-- Mini Player (Spotify-style) -->
     <LinearLayout
         android:id="@+id/miniPlayer"
         android:layout_width="0dp"
@@ -50,24 +49,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Album placeholder -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="52dp"
             android:layout_height="52dp"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
-            app:cardBackgroundColor="@color/surface_card_2">
+            app:cardBackgroundColor="?attr/colorSurface">
 
             <ImageView
                 android:id="@+id/ivMiniArt"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:alpha="0.85"
                 android:scaleType="centerInside"
                 android:src="@android:drawable/ic_media_play"
-                android:alpha="0.85" />
+                app:tint="?attr/colorOnSurface" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Info + progress -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -83,41 +81,42 @@
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="Song title"
-                android:textColor="@color/text_primary"
-                android:textStyle="bold"
-                android:textSize="14sp" />
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/currentSongArtist"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:alpha="0.7"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="Artist"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:layout_marginTop="2dp"/>
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="12sp" />
 
             <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="4dp"
                 android:layout_marginTop="6dp"
-                app:indicatorColor="@color/accent"
-                app:trackColor="@color/surface_card_2"
+                app:indicatorColor="?attr/colorPrimary"
+                app:trackColor="?attr/colorSurface"
                 app:trackThickness="4dp" />
 
             <TextView
                 android:id="@+id/progressText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:alpha="0.7"
                 android:text="0:00"
-                android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                android:layout_marginTop="4dp" />
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- Controls -->
         <ImageButton
             android:id="@+id/btnPrevious"
             android:layout_width="40dp"
@@ -125,7 +124,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Previous"
             android:src="@android:drawable/ic_media_previous"
-            android:tint="@color/text_primary"/>
+            app:tint="?attr/colorOnSurface" />
 
         <ImageButton
             android:id="@+id/btnPlayPause"
@@ -136,7 +135,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/play_pause"
             android:src="@android:drawable/ic_media_play"
-            app:tint="@color/text_primary"/>
+            app:tint="?attr/colorOnSurface" />
 
         <ImageButton
             android:id="@+id/btnNext"
@@ -145,7 +144,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Next"
             android:src="@android:drawable/ic_media_next"
-            app:tint="@color/text_primary"/>
+            app:tint="?attr/colorOnSurface" />
 
     </LinearLayout>
 

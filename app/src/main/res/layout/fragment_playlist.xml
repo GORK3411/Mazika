@@ -1,28 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.dashboard.DashboardFragment">
+    android:background="?android:attr/colorBackground"
+    android:padding="12dp"
+    tools:context=".ui.playlists.PlaylistFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <!-- Header -->
+    <TextView
+        android:id="@+id/tvHeaderPlaylists"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Playlists"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:textColor="?android:attr/textColorPrimary"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-        <Button
-            android:id="@+id/btnCreatePlaylist"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create" />
+    <!-- Search card -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardSearchPlaylists"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="?android:attr/textColorSecondary"
+        app:cardBackgroundColor="?android:attr/colorBackground"
+        app:layout_constraintTop_toBottomOf="@id/tvHeaderPlaylists"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/playlist_recycler_view"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:choiceMode="multipleChoiceModal"/>
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:tint="?android:attr/textColorSecondary"/>
+
+            <EditText
+                android:id="@+id/etSearchPlaylists"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/transparent"
+                android:hint="Search playlists"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textColorHint="?android:attr/textColorSecondary"
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Create button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCreatePlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:text="Create"
+        android:textAllCaps="false"
+        android:backgroundTint="?attr/colorPrimary"
+        android:textColor="?android:attr/textColorPrimaryInverse"
+        app:cornerRadius="14dp"
+        app:layout_constraintTop_toBottomOf="@id/cardSearchPlaylists"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- List -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPlaylists"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="8dp"
+        android:paddingBottom="90dp"
+        app:layout_constraintTop_toBottomOf="@id/btnCreatePlaylist"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Empty -->
+    <TextView
+        android:id="@+id/tvEmptyPlaylists"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="No playlists yet"
+        android:textColor="?android:attr/textColorSecondary"
+        android:textSize="14sp"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@id/rvPlaylists"
+        app:layout_constraintBottom_toBottomOf="@id/rvPlaylists"
+        app:layout_constraintStart_toStartOf="@id/rvPlaylists"
+        app:layout_constraintEnd_toEndOf="@id/rvPlaylists"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

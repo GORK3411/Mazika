@@ -83,5 +83,6 @@ object PlaylistRepository {
     {
         playlistDao.renamePlaylist(playlistId,newName)
     }
+    fun getPlaylistSummaries() = playlistDao.getAllWithSongCount()
 
 }
