@@ -47,7 +47,8 @@ class PlaylistPickerBottomSheet(
         )
         recyclerView.adapter = adapter
 
-        playlistViewModel.playlists.observe(viewLifecycleOwner) { playlists ->
+        playlistViewModel.playlistSummaries.observe(viewLifecycleOwner) { summaries ->
+            /*
             val summaries: List<PlaylistSummary> = playlists.map {
                 PlaylistSummary(
                     id = it.id,
@@ -55,6 +56,7 @@ class PlaylistPickerBottomSheet(
                     songCount = 0 // keep it simple for picker (fast)
                 )
             }
+             */
             adapter.submitList(summaries)
         }
     }

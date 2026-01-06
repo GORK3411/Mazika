@@ -190,4 +190,9 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
             actionMode = null
         }
     }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        tracker?.clearSelection()
+    }
 }

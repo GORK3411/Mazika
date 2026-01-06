@@ -121,11 +121,14 @@ class MusicService : Service() {
 
     private fun next() {
         player.seekToNextMediaItem()
+        player.play()
         playBackRepository.currentIndex.value  = player.currentMediaItemIndex
     }
 
     private fun previous() {
         player.seekToPreviousMediaItem()
+        player.play()
+
         playBackRepository.currentIndex.value  = player.currentMediaItemIndex
     }
 

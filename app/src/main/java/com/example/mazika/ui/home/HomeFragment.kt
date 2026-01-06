@@ -155,6 +155,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        tracker?.clearSelection()
         _binding = null
     }
 
@@ -204,4 +205,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             actionMode = null
         }
     }
+
+
 }

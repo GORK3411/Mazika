@@ -3,12 +3,17 @@ package com.example.mazika.ui.playlists
 import android.os.Bundle
 import android.view.ActionMode
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
@@ -17,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Song
+import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.repository.PlaylistRepository
 import com.example.mazika.ui.songs.SongAdapter
 import com.example.mazika.ui.songs.SongDetailsLookup
@@ -161,13 +167,53 @@ class PlaylistDetailsFragment : Fragment(R.layout.playlist_details_fragment) {
 
         // Now-playing highlight (same behavior as Songs tab)
         songViewModel.currentSong.observe(viewLifecycleOwner) { song ->
-            addedSongAdapter.setNowPlaying(song?.id, songViewModel.isPlaying.value == true)
+            allSongsAdapter.setNowPlaying(song?.id, songViewModel.isPlaying.value == true)
         }
 
         songViewModel.isPlaying.observe(viewLifecycleOwner) { playing ->
-            addedSongAdapter.setNowPlaying(songViewModel.currentSong.value?.id, playing == true)
+            allSongsAdapter.setNowPlaying(songViewModel.currentSong.value?.id, playing == true)
         }
         loadData()
+
+        //add the menu
+        val menuHost = requireActivity() as MenuHost
+        menuHost.addMenuProvider(object : MenuProvider {
+
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.playlist_details_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.action_play -> {
+                        val allSongsId = allSongs.map { it.id }
+                        PlayBackRepository.play(allSongsId)
+                        true
+                    }
+                    R.id.action_delete->
+                    {
+                        lifecycleScope.launch {
+                            playlistRepository.deletePlaylists(listOf(playlistId))
+                            findNavController().popBackStack()
+                        }
+                        true
+                    }
+                    R.id.action_rename->
+                    {
+                        SimpleDialogFragment("Rename") { playlistName ->
+                            lifecycleScope.launch {
+                                playlistRepository.renamePlaylist(playlistId,playlistName)
+                                view.findViewById<TextView>(R.id.tvHeaderPlaylistDetails).text = playlistName
+                            }
+                        }.show(parentFragmentManager, "UpdatePlaylistDialog")
+                        true
+                    }
+
+                    else -> false
+                }
+            }
+
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
 
@@ -294,6 +340,13 @@ class PlaylistDetailsFragment : Fragment(R.layout.playlist_details_fragment) {
         }
 
         playlistRecycler.adapter = null
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        playlistTracker?.clearSelection()
+        songTracker?.clearSelection()
+
     }
 
 }

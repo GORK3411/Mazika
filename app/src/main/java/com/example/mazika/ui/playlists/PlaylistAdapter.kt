@@ -59,7 +59,7 @@ class PlaylistAdapter(
             keyId = item.id.toLong()
 
             tvName.text = item.name
-            tvCount.text = "${item.songCount} songs"
+            tvCount.text = "${item.songCount} added songs"
 
             val primary = resolveColorInt(card, androidx.appcompat.R.attr.colorPrimary)
             val onSurface = resolveColorInt(card, com.google.android.material.R.attr.colorOnSurface)
