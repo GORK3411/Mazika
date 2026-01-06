@@ -25,4 +25,8 @@ interface PlaylistPlaylistDao {
         WHERE childPlaylistId = :playlistId
     """)
     suspend fun getParentIdsForPlaylist(playlistId: Int) : List<Int>
+
+    @Query("DELETE FROM PlaylistPlaylist WHERE parentPlaylistId = :playlistId AND childPlaylistId IN (:childrenIds)")
+    suspend fun removeChildrenFromPlaylist(playlistId : Int,childrenIds:List<Int>)
+
 }

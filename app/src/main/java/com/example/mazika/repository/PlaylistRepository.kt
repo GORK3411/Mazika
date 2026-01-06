@@ -85,4 +85,13 @@ object PlaylistRepository {
     }
     fun getPlaylistSummaries() = playlistDao.getAllWithSongCount()
 
+    suspend fun removeChildrenFromPlaylist(playlistId : Int,childrenIds:List<Int>)
+    {
+        playlistPlaylistDao.removeChildrenFromPlaylist(playlistId,childrenIds)
+    }
+
+    suspend fun removeSongsFromPlaylist(playlistId : Int,songsId:List<Long>)
+    {
+        playlistSongDao.removeSongsFromPlaylist(playlistId ,songsId)
+    }
 }

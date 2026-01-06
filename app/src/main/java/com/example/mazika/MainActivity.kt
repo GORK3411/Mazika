@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.annotation.OptIn
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -49,11 +51,17 @@ class MainActivity : ThemedActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //These were already when i created the project
+        //This part is used for the bottom navigation Bar
+        //To add a new button you need to add a new Item in "selection_menu.xml" create a fragment and add it in "mobile_navigation.xml"
+        //Note that both the fragment and item should have the same ID
+        //Also the ID needs to be added "appBarConfiguration" inside "MainActivity.kt"
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         navController = findNavController(R.id.nav_host_fragment_activity_main)
-
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_list,
@@ -75,16 +83,12 @@ class MainActivity : ThemedActivity() {
             songViewModel.fetchSongs()
         }
 
+        // Mini-player setup
         setupMiniPlayer(navController)
 
-        val db = Room.databaseBuilder(this, MyDatabase::class.java, "mazika.db")
-            .fallbackToDestructiveMigration()
-            .build()
+        //Playlist
+        //deleteDatabase("mazika.db")
 
-        PlaylistRepository.init(db.playlistDao, db.playlistSongDao, db.playlistPlaylistDao)
-
-        // Keeping your pattern (manual instance stored in activity)
-        playlistViewModel = PlaylistViewModel(PlaylistRepository)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -95,22 +99,26 @@ class MainActivity : ThemedActivity() {
         val miniPlayer = binding.miniPlayer
         miniPlayer.visibility = View.GONE
 
+        // Tap mini-player => open full player screen
         miniPlayer.setOnClickListener {
             if (navController.currentDestination?.id != R.id.playerFragment) {
                 navController.navigate(R.id.playerFragment)
             }
         }
 
+        // Show/hide mini-player depending on current screen
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isPlayerScreen = destination.id == R.id.playerFragment
             val hasSong = songViewModel.currentSong.value != null
             miniPlayer.visibility = if (!isPlayerScreen && hasSong) View.VISIBLE else View.GONE
         }
 
+        // Song title
         songViewModel.currentSong.observe(this) { song ->
             if (song == null) {
                 miniPlayer.visibility = View.GONE
             } else {
+                // if not on player screen, show
                 val isPlayerScreen = navController.currentDestination?.id == R.id.playerFragment
                 miniPlayer.visibility = if (!isPlayerScreen) View.VISIBLE else View.GONE
                 binding.currentSongTitle.text = song.title
@@ -118,6 +126,7 @@ class MainActivity : ThemedActivity() {
             }
         }
 
+        // Play/Pause icon
         songViewModel.isPlaying.observe(this) { playing ->
             binding.btnPlayPause.setImageResource(
                 if (playing) android.R.drawable.ic_media_pause
@@ -125,10 +134,12 @@ class MainActivity : ThemedActivity() {
             )
         }
 
+        // Buttons
         binding.btnPlayPause.setOnClickListener { songViewModel.togglePlayback() }
         binding.btnNext.setOnClickListener { songViewModel.next() }
         binding.btnPrevious.setOnClickListener { songViewModel.previous() }
 
+        // Progress
         songViewModel.duration.observe(this) { dur ->
             binding.progressBar.max = dur.coerceAtLeast(1)
         }

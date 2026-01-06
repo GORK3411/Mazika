@@ -10,6 +10,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Song
+import com.google.android.material.card.MaterialCardView
 
 class SongAdapter(
     private val onSongClick: (Song) -> Unit
@@ -52,7 +54,10 @@ class SongAdapter(
     override fun onBindViewHolder(holder: SongVH, position: Int) {
         val song = getItem(position)
         val isCurrent = (song.id == nowPlayingId)
-        holder.bind(song, isCurrent, nowPlayingIsPlaying)
+        val isSelected = tracker?.isSelected(song.id) == true // <-- check tracker selection
+        holder.bind(song, isCurrent, nowPlayingIsPlaying,isSelected)
+
+
     }
 
     class SongVH(
@@ -65,10 +70,8 @@ class SongAdapter(
         private val tvDuration: TextView = itemView.findViewById(R.id.tvDuration)
         private val btnMore: ImageButton = itemView.findViewById(R.id.btnMore)
         private val playingDot: View = itemView.findViewById(R.id.viewPlayingDot)
-
         private var songId: Long = RecyclerView.NO_ID
-
-        fun bind(song: Song, isCurrent: Boolean, isPlaying: Boolean) {
+        fun bind(song: Song, isCurrent: Boolean, isPlaying: Boolean,isSelected: Boolean) {
             tvTitle.text = song.title
             tvArtist.text = song.artist
             tvDuration.text = formatDuration(song.duration)
@@ -78,7 +81,11 @@ class SongAdapter(
             val secondary = resolveColorStateList(itemView, android.R.attr.textColorSecondary).defaultColor
 
             playingDot.visibility = if (isCurrent) View.VISIBLE else View.GONE
-
+            /*
+            val accent = ContextCompat.getColor(itemView.context, R.color.accent)
+            val normal = ContextCompat.getColor(itemView.context, R.color.text_primary)
+            val secondary = ContextCompat.getColor(itemView.context, R.color.text_secondary)
+            */
             tvTitle.setTextColor(if (isCurrent && isPlaying) accent else normal)
             tvArtist.setTextColor(secondary)
             tvDuration.setTextColor(secondary)
@@ -96,8 +103,21 @@ class SongAdapter(
                 }
                 menu.show()
             }
-
             songId = song.id
+
+            //Change card color
+            val card = itemView as MaterialCardView
+            if (isSelected) {
+                card.setCardBackgroundColor(
+                    ContextCompat.getColor(itemView.context, R.color.purple_200)
+                )
+                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.accent_blue)
+            } else {
+                card.setCardBackgroundColor(
+                    ContextCompat.getColor(itemView.context, R.color.surface_card)
+                )
+                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.divider_soft)
+            }
         }
 
         private fun formatDuration(ms: Long): String {

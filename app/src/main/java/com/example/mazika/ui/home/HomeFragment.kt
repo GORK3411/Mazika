@@ -35,11 +35,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private var fullList: List<Song> = emptyList()
     private var query: String = ""
-    private var sortMode: SortMode = SortMode.NAME
+    private var sortMode: SortMode = SortMode.DATE
 
     private enum class SortMode { NAME, ARTIST, DATE }
 
-    private var tracker: SelectionTracker<Long>? = null
+    private lateinit var tracker:SelectionTracker<Long>;
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,7 +49,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         songAdapter = SongAdapter(
             onSongClick = { clickedSong ->
-                songViewModel.playSongs(listOf(clickedSong.id))
+
+                val selectedIds = tracker.selection.toList()
+                if(selectedIds.size==0)
+                    songViewModel.playSongs(listOf(clickedSong.id))
             }
         )
 
@@ -103,7 +106,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
 
         songAdapter.tracker = tracker
-
         tracker?.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
             override fun onSelectionChanged() {
                 val count = tracker?.selection?.size() ?: 0

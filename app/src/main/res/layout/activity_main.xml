@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
-    android:paddingTop="?attr/actionBarSize">
+    android:paddingTop="?attr/actionBarSize"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
@@ -31,6 +32,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:navGraph="@navigation/mobile_navigation" />
 
+    <!-- Mini Player (Spotify-style) -->
     <LinearLayout
         android:id="@+id/miniPlayer"
         android:layout_width="0dp"
@@ -66,6 +68,7 @@
                 app:tint="?attr/colorOnSurface" />
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Info + progress -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"

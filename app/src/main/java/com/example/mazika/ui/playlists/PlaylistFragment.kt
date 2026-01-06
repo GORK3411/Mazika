@@ -10,6 +10,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.MainActivity
 import com.example.mazika.R
+import com.example.mazika.ui.songs.SongViewModel
 import com.example.mazika.model.PlaylistSummary
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.launch
@@ -37,8 +39,8 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        playlistViewModel = (activity as MainActivity).playlistViewModel
-
+        //playlistViewModel = (activity as MainActivity).playlistViewModel
+        playlistViewModel = ViewModelProvider(this)[PlaylistViewModel::class.java]
         val tvEmpty = view.findViewById<TextView>(R.id.tvEmptyPlaylists)
         val etSearch = view.findViewById<EditText>(R.id.etSearchPlaylists)
 
@@ -154,6 +156,7 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                 R.id.menu_delete -> {
                     playlistViewModel.deletePlaylists(selectedIdsInt)
                     mode?.finish()
+                    tracker.clearSelection()
                     true
                 }
 
@@ -170,10 +173,15 @@ class PlaylistFragment : Fragment(R.layout.fragment_playlist) {
                     }
                     sheet.show(parentFragmentManager, "PlaylistPicker")
                     mode?.finish()
+                    tracker.clearSelection()
                     true
                 }
 
-                else -> false
+                else ->
+                {
+                    tracker.clearSelection()
+                    false
+                }
             }
         }
 
