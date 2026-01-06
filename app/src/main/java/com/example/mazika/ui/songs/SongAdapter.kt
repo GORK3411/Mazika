@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mazika.R
 import com.example.mazika.model.Song
+import com.google.android.material.card.MaterialCardView
 
 class SongAdapter(
                   private val onSongClick: (Song) -> Unit
@@ -48,10 +49,14 @@ class SongAdapter(
         return SongVH(view, onSongClick)
     }
 
+
     override fun onBindViewHolder(holder: SongVH, position: Int) {
         val song = getItem(position)
         val isCurrent = (song.id == nowPlayingId)
-        holder.bind(song, isCurrent, nowPlayingIsPlaying)
+        val isSelected = tracker?.isSelected(song.id) == true // <-- check tracker selection
+        holder.bind(song, isCurrent, nowPlayingIsPlaying,isSelected)
+
+
     }
 
     class SongVH(
@@ -65,7 +70,7 @@ class SongAdapter(
         private val btnMore: ImageButton = itemView.findViewById(R.id.btnMore)
         private val playingDot: View = itemView.findViewById(R.id.viewPlayingDot)
 
-        fun bind(song: Song, isCurrent: Boolean, isPlaying: Boolean) {
+        fun bind(song: Song, isCurrent: Boolean, isPlaying: Boolean,isSelected: Boolean) {
             tvTitle.text = song.title
             tvArtist.text = song.artist
             tvDuration.text = formatDuration(song.duration)
@@ -100,6 +105,20 @@ class SongAdapter(
                 menu.show()
             }
             songId = song.id
+
+            //Change card color
+            val card = itemView as MaterialCardView
+            if (isSelected) {
+                card.setCardBackgroundColor(
+                    ContextCompat.getColor(itemView.context, R.color.purple_200)
+                )
+                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.accent)
+            } else {
+                card.setCardBackgroundColor(
+                    ContextCompat.getColor(itemView.context, R.color.surface_card)
+                )
+                card.strokeColor = ContextCompat.getColor(itemView.context, R.color.divider_soft)
+            }
         }
 
         private fun formatDuration(ms: Long): String {
