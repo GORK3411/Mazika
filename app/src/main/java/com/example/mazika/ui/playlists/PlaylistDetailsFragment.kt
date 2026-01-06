@@ -111,10 +111,13 @@ class PlaylistDetailsFragment : Fragment(R.layout.playlist_details_fragment) {
 
         //Added Song Adapter
         addedSongAdapter = SongAdapter { clicked ->
+            /*
             val ids = addedSongAdapter.currentList.map { it.id }.toMutableList()
             ids.remove(clicked.id)
             ids.add(0, clicked.id)
             songViewModel.playSongs(ids)
+
+             */
         }
         addedSongsRecycler.adapter = addedSongAdapter
 
