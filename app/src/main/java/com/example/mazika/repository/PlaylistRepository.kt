@@ -38,7 +38,7 @@ object PlaylistRepository {
         // Step 1: find all ancestors of the parent
         val parentIds = HashSet<Int>()
         findAllParentsForPlaylist(parentPlaylistId, parentIds)
-
+        parentIds.add(parentPlaylistId)
         // Step 2: filter out childIds that would create a cycle
         val usedPlaylistIds = childIds.filter { parentIds.contains(it) }
 

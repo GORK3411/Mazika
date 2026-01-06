@@ -77,6 +77,16 @@ class PlaylistDetailsFragment : Fragment(R.layout.playlist_details_fragment) {
                 // handle click
                 try {
                     //Make something to create a new PlaylistDetailsFragment
+                    val bundle = Bundle().apply {
+                        putInt("playlistId", playlist.id)
+                        putString("playlistName", playlist.name)
+                    }
+
+                    findNavController().navigate(
+                        R.id.action_playlistDetails_to_playlistDetails,
+                        bundle
+                    )
+
                 }
                 catch (e: Exception)
                 {

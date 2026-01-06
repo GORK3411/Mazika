@@ -1,81 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="0dp">
 
-    <TextView
-        android:id="@+id/tvHeaderPlaylistDetails"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Playlist"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="20sp"
-        android:textStyle="bold" />
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/tvHeaderPlaylistDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Playlist"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    <!-- Child Playlists -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Child playlists"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:paddingBottom="8dp"/>
+        <!-- Child Playlists -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Child playlists"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:paddingBottom="8dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlist_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        android:overScrollMode="never"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlist_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="16dp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="16dp"/>
 
-    <!-- Added Songs -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Added songs"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:paddingBottom="8dp"/>
+        <!-- Added Songs -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Added songs"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:paddingBottom="8dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/added_song_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:paddingTop="6dp"
-        />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/added_song_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingTop="6dp"
+            android:nestedScrollingEnabled="false"/>
 
-    <!-- All Songs -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="All songs"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="?android:attr/textColorPrimary"
-        android:paddingBottom="8dp"/>
+        <!-- All Songs -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="All songs"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:paddingBottom="8dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/all_song_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        android:overScrollMode="never"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/all_song_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"/>
 
-    <!-- space for mini-player -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="90dp"/>
+        <!-- space for mini-player -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="90dp"/>
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

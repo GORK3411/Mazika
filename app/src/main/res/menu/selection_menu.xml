@@ -5,7 +5,7 @@
     <item
         android:id="@+id/menu_play"
         android:title="Play"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/ic_play_24"
         app:showAsAction="ifRoom"/>
 
     <item
@@ -13,9 +13,11 @@
         android:title="Add To Playlist"
         app:showAsAction="never"/>
 
+    <!--
     <item
         android:id="@+id/menu_add_to_play_queue"
         android:title="Add To Play Queue"
         app:showAsAction="never"/>
+    -->
 
 </menu>

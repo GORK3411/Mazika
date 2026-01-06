@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/navigation_list"
-        android:icon="@android:drawable/ic_menu_view"
+        android:icon="@android:drawable/ic_media_play"
         android:title="@string/title_songs" />
 
     <item
