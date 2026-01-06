@@ -13,53 +13,53 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SongViewModel : ViewModel() {
+
     private val playbackRepository = PlayBackRepository
     private val songRepository = SongRepository
 
     private val _songs = MutableLiveData<List<Song>>()
     val songs: LiveData<List<Song>> = _songs
 
-    fun fetchSongs()
-    {
+    fun fetchSongs() {
         viewModelScope.launch(Dispatchers.IO) {
-            val songs = songRepository.loadSongs()
-            _songs.postValue(songs)
+            val loaded = songRepository.loadSongs()
+            _songs.postValue(loaded)
         }
-
     }
 
-    //Currently playing song
+    // Currently playing song
     val currentSong = playbackRepository.currentSong.asLiveData()
     val isPlaying = playbackRepository.isPlaying.asLiveData()
 
-    //To track the song's currentPosition while playing
+    // Track position/duration
     val position = playbackRepository.position.asLiveData()
     val duration = playbackRepository.duration.asLiveData()
 
-    // ▶ Playback commands
     fun playSongs(songIds: List<Long>) {
         playbackRepository.play(songIds)
     }
 
-    fun togglePlayback() {
-        playbackRepository.toggle()
+
+    fun playFromSongId(clickedId: Long) {
+        val list = _songs.value ?: return
+        val ids = list.map { it.id }
+        val startIndex = ids.indexOf(clickedId)
+
+        if (startIndex == -1) {
+            playbackRepository.play(listOf(clickedId))
+            return
+        }
+
+        val reordered = ids.drop(startIndex) + ids.take(startIndex)
+        playbackRepository.play(reordered)
     }
 
-    fun next()
-    {
-        playbackRepository.next()
-    }
-    fun previous()
-    {
-        playbackRepository.previous()
-    }
-    fun seekTo(positionMs: Int)
-    {
-        playbackRepository.seekTo(positionMs.toLong())
-    }
+    fun togglePlayback() = playbackRepository.toggle()
+    fun next() = playbackRepository.next()
+    fun previous() = playbackRepository.previous()
+    fun seekTo(positionMs: Int) = playbackRepository.seekTo(positionMs.toLong())
 
     fun addSongsToPlaylist(playlistId: Int, ids: List<Long>) = viewModelScope.launch {
         PlaylistRepository.addSongsToPlaylist(playlistId, ids)
     }
 }
-

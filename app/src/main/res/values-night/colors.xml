@@ -9,13 +9,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- LIGHT mode palette -->
-    <color name="app_bg">#F7F7FA</color>
-    <color name="surface_card">#FFFFFFFF</color>
-    <color name="surface_card_2">#FFF0F0F6</color>
-    <color name="text_primary">#FF111111</color>
-    <color name="text_secondary">#FF666666</color>
-    <color name="divider_soft">#22000000</color>
+    <!-- DARK mode palette (your old values) -->
+    <color name="app_bg">#0B0B0F</color>
+    <color name="surface_card">#14141C</color>
+    <color name="surface_card_2">#1C1C26</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="divider_soft">#22FFFFFF</color>
 
     <!-- Accent choices -->
     <color name="accent_purple">#7C4DFF</color>

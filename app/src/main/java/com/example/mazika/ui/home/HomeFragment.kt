@@ -19,9 +19,7 @@ import com.example.mazika.databinding.FragmentHomeBinding
 import com.example.mazika.model.Song
 import com.example.mazika.repository.PlayBackRepository
 import com.example.mazika.ui.playlists.MessageDialogFragment
-import com.example.mazika.ui.playlists.PlaylistDetailsLookup
 import com.example.mazika.ui.playlists.PlaylistPickerBottomSheet
-import com.example.mazika.ui.playlists.PlaylistViewModel
 import com.example.mazika.ui.songs.SongAdapter
 import com.example.mazika.ui.songs.SongDetailsLookup
 import com.example.mazika.ui.songs.SongViewModel
@@ -35,14 +33,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var songViewModel: SongViewModel
     private lateinit var songAdapter: SongAdapter
 
-
     private var fullList: List<Song> = emptyList()
     private var query: String = ""
     private var sortMode: SortMode = SortMode.NAME
 
     private enum class SortMode { NAME, ARTIST, DATE }
 
-    private lateinit var tracker:SelectionTracker<Long>;
+    private var tracker: SelectionTracker<Long>? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,25 +47,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         songViewModel = ViewModelProvider(requireActivity())[SongViewModel::class.java]
 
-        // Adapter: clicking a song should start playing immediately (Spotify behavior)
         songAdapter = SongAdapter(
             onSongClick = { clickedSong ->
-                val visible = songAdapter.currentList
-                val ids = visible.map { it.id }.toMutableList()
-                ids.remove(clickedSong.id)
-                ids.add(0, clickedSong.id)
-                songViewModel.playSongs(ids)
+                songViewModel.playSongs(listOf(clickedSong.id))
             }
         )
 
         binding.rvSongs.layoutManager = LinearLayoutManager(requireContext())
         binding.rvSongs.adapter = songAdapter
 
-        // Loading on start
         binding.pbLoading.visibility = View.VISIBLE
         binding.tvEmpty.visibility = View.GONE
 
-        // Observe songs from repository
+        // Observe songs
         songViewModel.songs.observe(viewLifecycleOwner) { list ->
             fullList = list ?: emptyList()
             binding.pbLoading.visibility = View.GONE
@@ -91,7 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             applyFilterSort()
         }
 
-        // Highlight currently playing song in the list (Spotify touch)
+        // Highlight currently playing song
         songViewModel.currentSong.observe(viewLifecycleOwner) { song ->
             songAdapter.setNowPlaying(song?.id, songViewModel.isPlaying.value == true)
         }
@@ -99,9 +90,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             songAdapter.setNowPlaying(songViewModel.currentSong.value?.id, playing == true)
         }
 
-
+        // Selection tracker
         val recyclerView = binding.rvSongs
-
         tracker = SelectionTracker.Builder<Long>(
             "songSelection",
             recyclerView,
@@ -113,9 +103,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
 
         songAdapter.tracker = tracker
-        tracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+
+        tracker?.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
             override fun onSelectionChanged() {
-                val count = tracker.selection.size()
+                val count = tracker?.selection?.size() ?: 0
 
                 if (count > 0) {
                     if (actionMode == null) {
@@ -127,6 +118,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
             }
         })
+
+        // If nothing loaded yet, fetch now (safe)
+        if (songViewModel.songs.value.isNullOrEmpty()) {
+            songViewModel.fetchSongs()
+        }
     }
 
     private fun applyFilterSort() {
@@ -150,7 +146,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         val showEmpty = sorted.isEmpty()
         binding.tvEmpty.visibility = if (showEmpty) View.VISIBLE else View.GONE
-
         binding.tvEmpty.text =
             if (q.isNotEmpty()) "No results for \"$query\""
             else "No songs found (download songs to your phone first)"
@@ -161,7 +156,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         _binding = null
     }
 
-    //This is used with the tracker
+    // ActionMode for multi-select
     private var actionMode: ActionMode? = null
 
     private val actionModeCallback = object : ActionMode.Callback {
@@ -174,48 +169,37 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean = false
 
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
-            val selectedIds = tracker.selection.toList()
+            val selectedIds = tracker?.selection?.toList().orEmpty()
 
-            when(item?.itemId) {
-                R.id.menu_play->{
+            when (item?.itemId) {
+                R.id.menu_play -> {
                     PlayBackRepository.play(selectedIds)
                     mode?.finish()
                     return true
                 }
-                R.id.menu_add_to_play_queue->
-                {
 
-                }
-                R.id.menu_add_to_playlist-> {
-                    val sheet = PlaylistPickerBottomSheet() { playlistId ->
+                R.id.menu_add_to_playlist -> {
+                    val sheet = PlaylistPickerBottomSheet { playlistId ->
                         lifecycleScope.launch {
                             try {
-                                songViewModel.addSongsToPlaylist(playlistId,selectedIds)
-                            }
-                            catch (e: Exception)
-                            {
+                                songViewModel.addSongsToPlaylist(playlistId, selectedIds)
+                            } catch (e: Exception) {
                                 MessageDialogFragment(e.message.toString())
                                     .show(parentFragmentManager, "Fail")
-                                //Toast.makeText( activity, e.message, Toast.LENGTH_SHORT).show()
                             }
                         }
-
                     }
                     sheet.show(parentFragmentManager, "PlaylistPicker")
                     mode?.finish()
                     return true
                 }
-
             }
             return false
         }
 
-
         override fun onDestroyActionMode(mode: ActionMode?) {
-            // Clear selection when ActionMode ends
             tracker?.clearSelection()
             actionMode = null
         }
-
     }
 }

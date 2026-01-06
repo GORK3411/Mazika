@@ -29,7 +29,29 @@
         android:id="@+id/navigation_playlists"
         android:name="com.example.mazika.ui.playlists.PlaylistFragment"
         android:label="@string/title_playlist"
-        tools:layout="@layout/fragment_playlist" />
+        tools:layout="@layout/fragment_playlist">
+
+        <!-- ✅ Navigate to playlist details (NOT a tab) -->
+        <action
+            android:id="@+id/action_navigation_playlists_to_playlistDetailsFragment"
+            app:destination="@id/playlistDetailsFragment" />
+    </fragment>
+
+    <!-- ✅ PLAYLIST DETAILS (NOT a tab) -->
+    <fragment
+        android:id="@+id/playlistDetailsFragment"
+        android:name="com.example.mazika.ui.playlists.PlaylistDetailsFragment"
+        android:label="Playlist"
+        tools:layout="@layout/playlist_details_fragment">
+
+        <argument
+            android:name="playlistId"
+            app:argType="integer" />
+
+        <argument
+            android:name="playlistName"
+            app:argType="string" />
+    </fragment>
 
     <!-- SETTINGS TAB -->
     <fragment

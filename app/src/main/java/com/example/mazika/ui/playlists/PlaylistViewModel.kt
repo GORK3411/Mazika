@@ -7,25 +7,25 @@ import com.example.mazika.model.Playlist
 import com.example.mazika.repository.PlaylistRepository
 import kotlinx.coroutines.launch
 
-class PlaylistViewModel (private val playlistRepository: PlaylistRepository): ViewModel(){
+class PlaylistViewModel(private val playlistRepository: PlaylistRepository) : ViewModel() {
+
+    val playlistSummaries = playlistRepository.getPlaylistSummaries().asLiveData()
 
     val playlists = playlistRepository.getPlaylists().asLiveData()
-    fun addPlaylist(name:String) = viewModelScope.launch {
+
+    fun addPlaylist(name: String) = viewModelScope.launch {
         playlistRepository.addPlaylist(Playlist(name = name))
     }
-    suspend fun addChildrenToPlaylist(playlistId : Int, selectedIdsInt: List<Int>)
-    {
-                playlistRepository.addChildToPlaylist(
-                    playlistId,
-                    selectedIdsInt
-                )
 
+    fun renamePlaylist(playlistId: Int, newName: String) = viewModelScope.launch {
+        playlistRepository.renamePlaylist(playlistId, newName)
     }
 
-    fun deletePlaylists(list: List<Int>)
-    {
-        viewModelScope.launch {
-            playlistRepository.deletePlaylists(list)
-        }
+    fun deletePlaylists(list: List<Int>) {
+        viewModelScope.launch { playlistRepository.deletePlaylists(list) }
+    }
+
+    suspend fun addChildrenToPlaylist(parentId: Int, childIds: List<Int>) {
+        playlistRepository.addChildToPlaylist(parentId, childIds)
     }
 }
